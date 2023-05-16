@@ -1,0 +1,14 @@
+[book]
+authors = ["BlackByte_area"]
+language = "cn"
+multilingual = false
+src = "src"
+title = "CosmWasm book cn"
+description = "Guide to building CosmWasm smart contracts"
+
+[rust]
+edition = "2021"
+
+[preprocessor.plantuml]
+plantuml-cmd = "plantuml"
+
