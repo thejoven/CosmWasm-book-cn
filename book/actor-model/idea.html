@@ -1,0 +1,266 @@
+<!DOCTYPE HTML>
+<html lang="cn" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>概念 - CosmWasm book cn</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Guide to building CosmWasm smart contracts">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../index.html">介绍</a></li><li class="chapter-item expanded affix "><li class="part-title">入门指南</li><li class="chapter-item expanded "><a href="../setting-up-env.html"><strong aria-hidden="true">1.</strong> 设置环境</a></li><li class="chapter-item expanded "><a href="../wasmd-quick-start.html"><strong aria-hidden="true">2.</strong> 使用wasmd快速入门</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../wasmd-quick-start/testnet.html"><strong aria-hidden="true">2.1.</strong> 测试网设置</a></li><li class="chapter-item expanded "><a href="../wasmd-quick-start/preparing-account.html"><strong aria-hidden="true">2.2.</strong> 准备账户</a></li><li class="chapter-item expanded "><a href="../wasmd-quick-start/testned-interaction.html"><strong aria-hidden="true">2.3.</strong> 与测试网交互</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">智能合约</li><li class="chapter-item expanded "><a href="../basics.html"><strong aria-hidden="true">3.</strong> 基础知识</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../basics/rust-project.html"><strong aria-hidden="true">3.1.</strong> 创建Rust项目</a></li><li class="chapter-item expanded "><a href="../basics/entry-points.html"><strong aria-hidden="true">3.2.</strong> 入口点</a></li><li class="chapter-item expanded "><a href="../basics/building-contract.html"><strong aria-hidden="true">3.3.</strong> 构建合约</a></li><li class="chapter-item expanded "><a href="../basics/query.html"><strong aria-hidden="true">3.4.</strong> 创建查询</a></li><li class="chapter-item expanded "><a href="../basics/query-testing.html"><strong aria-hidden="true">3.5.</strong> 测试查询</a></li><li class="chapter-item expanded "><a href="../basics/multitest-intro.html"><strong aria-hidden="true">3.6.</strong> 介绍multitest</a></li><li class="chapter-item expanded "><a href="../basics/state.html"><strong aria-hidden="true">3.7.</strong> 合约状态</a></li><li class="chapter-item expanded "><a href="../basics/execute.html"><strong aria-hidden="true">3.8.</strong> 执行消息</a></li><li class="chapter-item expanded "><a href="../basics/events.html"><strong aria-hidden="true">3.9.</strong> 事件、属性和数据</a></li><li class="chapter-item expanded "><a href="../basics/funds.html"><strong aria-hidden="true">3.10.</strong> 处理资金</a></li><li class="chapter-item expanded "><a href="../basics/good-practices.html"><strong aria-hidden="true">3.11.</strong> 良好的实践</a></li><li class="chapter-item expanded "><a href="../basics/fp-types.html"><strong aria-hidden="true">3.12.</strong> 浮点类型</a></li></ol></li><li class="chapter-item expanded "><a href="../actor-model.html"><strong aria-hidden="true">4.</strong> Actor模型</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../actor-model/idea.html" class="active"><strong aria-hidden="true">4.1.</strong> 概念</a></li><li class="chapter-item expanded "><a href="../actor-model/actors-in-blockchain.html"><strong aria-hidden="true">4.2.</strong> 区块链中的Actor</a></li><li class="chapter-item expanded "><a href="../actor-model/contract-as-actor.html"><strong aria-hidden="true">4.3.</strong> 合约作为Actor</a></li></ol></li><li class="chapter-item expanded "><a href="../cross-contract.html"><strong aria-hidden="true">5.</strong> 跨合约通信</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../cross-contract/design.html"><strong aria-hidden="true">5.1.</strong> 设计</a></li><li class="chapter-item expanded "><a href="../cross-contract/fixing-admin.html"><strong aria-hidden="true">5.2.</strong> 修复管理员合约</a></li><li class="chapter-item expanded "><a href="../cross-contract/map-storage.html"><strong aria-hidden="true">5.3.</strong> 映射存储</a></li><li class="chapter-item expanded "><a href="../cross-contract/working-with-time.html"><strong aria-hidden="true">5.4.</strong> 处理时间</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> 区块链间通信</div></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../impressum.html">法律信息</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">CosmWasm book cn</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="actor模型的理念"><a class="header" href="#actor模型的理念">Actor模型的理念</a></h1>
+<p>Actor模型是解决智能合约之间通信问题的方案。让我们来看看为什么CosmWasm选择了这种特定的解决方案以及其带来的后果。</p>
+<h2 id="问题"><a class="header" href="#问题">问题</a></h2>
+<p>智能合约可以被想象为沙盒化的微服务。根据<a href="https://en.wikipedia.org/wiki/SOLID">SOLID</a>原则，将责任分散在不同实体之间是有价值的。然而，为了在合约之间分配工作，需要进行通信。因此，如果一个合约负责管理组成员资格，可以从另一个合约调用其功能。</p>
+<p>在软件工程中，解决这个问题的传统方法是将服务建模为可以通过某种RPC机制调用的函数，并将其结果作为响应返回。尽管这种方法看起来不错，但它会带来一些问题，特别是与共享状态一致性有关的问题。</p>
+<p>在业务级建模中，另一种更流行的方法是将实体视为能够执行某些任务但在调用其他合约时不中断的“actor”。对其他合约的任何调用只能在整个执行完成后进行。当“子调用”完成时，它会回调原始合约。</p>
+<p>这种解决方案可能感觉不自然，并且需要不同类型的设计解决方案，但事实证明它非常适用于智能合约执行。我将尝试逐步解释如何进行推理，以及如何将其映射到合约结构。</p>
+<h2 id="actor角色"><a class="header" href="#actor角色">Actor角色</a></h2>
+<p>整个模型中最重要的是Actor角色本身。那么，它是什么呢？Actor是一个合约的单个实例，可以执行多个操作。当Actor完成工作时，它准备了一个总结，其中包括完成整个预定任务所需的事项列表。</p>
+<p>KFC餐厅中的销售员就是一个Actor的例子。首先，您会点餐（BSmart），因此您向销售员请求动作。从系统用户的角度来看，您可以将此任务视为“销售并准备我的餐点”，但销售员执行的动作只是“收取支付并创建订单”。此操作的第一部分是创建账单并向您收取费用，然后它会请求其他Actor（可能是厨师）准备三明治和薯条。然后，当厨师完成他的一部分工作时，他会检查所有餐点是否准备好。如果是这样，他会调用最后一个Actor，即服务员，将食物送到您那里。此时，您可以收到您的外卖，任务被视为已完成。</p>
+<p>上述描述的工作流程有些简化。特别是在一家典型的餐厅中，服务员会观察厨房，而不是由厨师触发，但在Actor模型中，这是不可能的。在这里，系统的实体是被动的，不能主动观察环境-它们只能对来自其他系统参与者的消息做出反应。同样在KFC，销售员不会为特定的厨师安排子任务；相反，他们会留下任务，等待厨师有空时接手。这并不是因为厨师不能主动听取环境的原因。但是，可以创建一个合约作为厨师的调度程序，从销售员那里收集所有订单，并在某种情况下将它们分配给厨师。</p>
+<h2 id="动作"><a class="header" href="#动作">动作</a></h2>
+<p>Actor是模型实体，但为了与它们进行适当的通信，我们需要一种协议。每个Actor都能执行多个动作。在我之前的KFC例子中，销售员唯一能做的动作是“收取支付并创建订单”。然而，并不总是这样-我们的厨师擅长执行“准备薯条”和“准备三明治”等许多动作。</p>
+<p>因此，当我们想在Actor系统中做某事时，我们会将某个动作安排给离我们最近的Actor，通常还会带上一些附加参数（例如我们可以选择是否用沙拉替换薯条）。</p>
+<p>然而，将动作命名为与合约中发生的确切事情相同的事物会产生误导。再次看看KFC的例子。正如我之前提到的，销售员执行的动作是“收取支付并创建订单”。问题是，对于安排此动作的客户来说，演员本身的责任是什么并不重要-客户安排的是“准备餐点”，并附上一些具体的准备说明。因此，我们可以说，动作是合约本身执行的动作，以及它安排的所有子动作。</p>
+<h2 id="多阶段动作"><a class="header" href="#多阶段动作">多阶段动作</a></h2>
+<p>整个想法有一定道理，但是在Actor模型中也带来了问题：如果我想在我的合约中执行某个动作，但要完全完成某些步骤，合约必须确保它安排的某些子动作已经完成，怎么办呢？</p>
+<p>想象一下，在之前的KFC情景中，没有专门的服务员。相反，当厨师完成他们的工作时，销售员为您提供餐点。</p>
+<p>这种模式非常重要和常见，以至于在CosmWasm中，我们开发了一种特殊的处理方式，即专用的<code>Reply</code>动作。</p>
+<p>当销售员为厨师安排动作时，他给该动作分配一个数字（比如订单号），并将其传递给厨师。他还记住了他为每个订单号安排了多少个动作。现在，每当厨师完成他的动作时，他会在销售员身上调用特殊的<code>Reply</code>动作，其中他会传回订单号。然后，销售员会减少此订单剩余的动作数量，如果达到零，他会上菜。</p>
+<p>现在你可以说，<code>Reply</code>动作完全没有必要，因为厨师可以在销售员身上安排任何任意的动作，比如<code>Serve</code>，为什么需要特殊的<code>Reply</code>呢？原因是抽象和可重用性。厨师的任务是准备餐点，仅此而已。他没有理由知道自己为什么要准备薯条-它是更大任务的一部分（比如为客户下订单），还是销售员自己饿了。可能不仅销售员有资格叫厨师做餐点-任何餐厅员工都可以只为自己做这样的调用。因此，我们需要一种能够以某种通用方式对演员完成工作作出反应的方式，以便在任何情况下正确处理这种情况。</p>
+<p>值得注意的是，<code>Reply</code>可以包含一些附加数据。之前分配的ID是<code>Reply</code>调用中唯一需要的信息，但演员可以传递一些附加数据-发出的<code>events</code>，这些大多是元数据（主要供非区块链应用程序观察），以及任何它想要传递的任意数据。</p>
+<h2 id="状态"><a class="header" href="#状态">状态</a></h2>
+<p>到目前为止，我们将Actor视为执行某些工作的实体，比如准备餐点。如果我们考虑计算机程序，这样的工作可能是在屏幕上显示某些内容，或者打印一些东西。但智能合约并非如此。智能合约唯一能够影响的是它们的内部状态。因此，状态是合约保存的任意数据。在我之前提到的KFC的例子中，销售员记住了他为厨师安排的尚未完成的动作数量-这个数字是销售员的状态的一部分。</p>
+<p>为了给出一个更现实的合约状态的例子，让我们考虑一个比餐厅更贴近现实生活的智能合约。假设我们想要创建自己的货币-也许我们想要为某个MMORPG游戏创建基于智能合约的市场。因此，我们需要某种方式能够至少在玩家之间转移货币。我们可以通过创建一个名为<code>MmoCurrency</code>的合约来实现这一点，该合约支持<code>Transfer</code>动作以将货币转移到其他玩家。那么这样的合约状态是什么呢？它只是一个将玩家名称映射到其所拥有的货币数量的表。我们刚刚提到的合约在CosmWasm示例中是存在的，称为<a href="https://github.com/CosmWasm/cw-plus/tree/main/contracts/cw20-base"><code>cw20-base</code>
+合约</a>
+（它有些复杂，但这是其核心思想）。</p>
+<p>现在有一个问题-如果我无法检查我拥有多少货币，那么如何进行货币转移？这是一个非常好的问题，答案很简单-我们系统中每个合约的整个状态都是公开的。这并非适用于每个Actor模型，但在CosmWasm中，这就是它的工作方式，并且在某种程度上是由区块链的性质所强制的。在区块链上发生的一切都必须是公开的，如果某些信息应该被隐藏，它必须以间接的方式存储。</p>
+<p>关于CosmWasm中的状态有一点非常重要，那就是状态是事务性的。对状态的任何更新都不会立即生效，只有当整个操作成功时才会应用。这非常重要，因为它确保如果合约出现问题，它始终保持在某种适当的状态。让我们考虑一下我们的<code>MmoCurrency</code>情况。想象一下，在<code>Transfer</code>动作中，我们首先增加接收者的货币数量（通过更新状态），然后 再减少发送者的数量。然而，在减少之前，我们需要检查发送者是否拥有足够的资金来执行交易。如果我们发现无法执行交易，我们不需要手动进行回滚-我们只需从操作执行中返回一个失败，并且状态不会被更新。因此，当合约状态被更新时，它只是对此状态的局部副本进行修改，而部分更改对其他合约永远不可见。</p>
+<h2 id="查询"><a class="header" href="#查询">查询</a></h2>
+<p>在CosmWasm对Actor模型的方法中，还有一个构建块我还没有涵盖到。正如我所说，每个合约的整个状态都是公开的，任何人都可以查看。问题是，这种查看状态的方式并不是非常方便-它要求合约的用户了解其内部结构，这在某种程度上违反了SOLID规则（特别是里氏替换原则）。例如，如果一个合约被更新，其状态结构稍作改变，那么查看其状态的另一个合约将永远无法正常工作。此外，合约状态通常是简化的，并且与观察者相关的信息将从状态中计算得出。</p>
+<p>这就是查询发挥作用的地方。查询是发送给合约的一种消息类型，它不执行任何动作，因此不更新任何状态，但可以立即返回答案。</p>
+<p>在我们的KFC比喻中，查询可以是销售员去问厨师：“我们的芝士汉堡还有酸黄瓜吗？”这可以在运营过程中完成，并且响应可以在其中使用。这是可能的，因为查询永远不会更新其状态，因此它们不需要以事务方式处理。</p>
+<p>然而，查询的存在并不意味着我们不能直接查看合约的状态-状态仍然是公开的，直接查看它们的技术被称为“原始查询”（Raw Queries）。为了清楚起见，非原始查询有时被称为“智能查询”（Smart Queries）。</p>
+<h2 id="将所有内容综合起来-事务性调用流程"><a class="header" href="#将所有内容综合起来-事务性调用流程">将所有内容综合起来-事务性调用流程</a></h2>
+<p>因此，我们在这里涉及了许多内容，我知道这可能有些令人困惑。因此，我想通过对CosmWasm合约进行一些更复杂的调用来形象地说明“事务性状态”意味着什么。</p>
+<p>让我们想象两个合约：</p>
+<ol>
+<li>之前提到的<code>MmoCurrency</code>合约，它可以执行<code>Transfer</code>动作，允许将某个<code>amount</code>的货币转移到某个<code>receiver</code>。</li>
+<li><code>WarriorNpc</code>合约，它会拥有一些我们的货币数量，并且会被我们的MMO引擎用于支付玩家完成某个任务的奖励。它将由<code>Payout</code>动作触发，只能由特定的客户（即我们的游戏引擎）调用。</li>
+</ol>
+<p>现在有一件有趣的事情-这个模型迫使我们在经济方面使我们的MMO更加现实，这是我们通常看到的情况-因为<code>WarriorNpc</code>拥有一些货币，而且无法通过任何方式创造更多。这并非总是如此（之前提到的<code>cw20</code>在这种情况下具有铸币的概念），但为了简单起见，让我们假设这是我们想要的情况。
+为了使任务持续更长时间，我们会制定一个奖励，使其始终介于<code>1 mmo</code>和<code>100 mmo</code>之间，但最理想的情况是战士拥有的货币的<code>15%</code>。这意味着随着每位后续玩家的加入，任务奖励会减少，直到战士身无分文，一无所有，无法再支付玩家。</p>
+<p>那么，流程会是什么样的？第一个游戏将向<code>WarriorNpc</code>合约发送一个<code>Payout</code>消息，其中包含应该获得奖励的玩家的信息。战士将跟踪完成任务的玩家，以避免重复支付给同一个人-在他的状态中会有一个玩家列表。首先，他会检查列表以查找需要支付的玩家-如果他在列表中，他将以错误结束交易。</p>
+<p>然而，在大多数情况下，玩家不会出现在列表中-然后<code>WarriorNpc</code>会将其添加到列表中。现在，战士完成了他的任务，并安排了由<code>MmoCurrency</code>执行的<code>Transfer</code>动作。</p>
+<p>但是有一个重要的事情-因为<code>Transfer</code>动作实际上是更大的<code>Payout</code>流程的一部分，它不会在原始的区块链状态上执行，而是在本地副本上执行，该副本已经应用了玩家列表。因此，如果<code>MmoCurrency</code>以任何原因查看<code>WarriorNpc</code>的内部列表，它将已经是更新过的。</p>
+<p>现在，<code>MmoCurrency</code>正在执行其工作，更新战士和玩家的余额状态（请注意，我们在这里将我们的战士视为另一个玩家！）。当它完成时，可能会发生两件事：</p>
+<ol>
+<li>发生错误-可能战士的现金不足，无法再支付任务费用。在这种情况下，对于原始的区块链存储，不会应用任何更改-无论是更新成功玩家列表，还是余额更改。它们就像从未发生过一样。在数据库世界中，这被称为事务回滚。</li>
+<li>操作成功-所有对状态的更改现在都已应用到区块链上，任何对<code>MmoCurrency</code>或<code>WarriorNpc</code>的进一步观察都将看到更新后的数据。</li>
+</ol>
+<p>存在一个问题-在这个模型中，我们的列表不是完成任务的玩家列表（正如我们希望的那样），而是支付奖励的玩家列表（因为在转账失败时，列表不会更新）。我们可以改进。</p>
+<h2 id="处理响应的不同方式"><a class="header" href="#处理响应的不同方式">处理响应的不同方式</a></h2>
+<p>请注意，我们根本没有提到<code>Reply</code>操作。那么为什么<code>MmoCurrency</code>没有在<code>WarriorNpc</code>上调用它呢？原因是这个操作是可选的。在将子动作安排在另一个合约上时，我们可以选择何时调用<code>Reply</code>以及如何处理结果：</p>
+<ol>
+<li>从不调用<code>Reply</code>，如果子消息失败，则动作失败。</li>
+<li>成功时调用<code>Reply</code>。</li>
+<li>失败时调用<code>Reply</code>。</li>
+<li>始终调用<code>Reply</code>。</li>
+</ol>
+<p>因此，如果我们不要求后续合约调用<code>Reply</code>，那么它就不会发生。在这种情况下，如果子调用失败，整个事务将被回滚-子消息的失败会传递导致原始消息失败。现在可能有点复杂，但我保证，如果你能多练习一下，它会变得简单起来。</p>
+<p>在处理回复时，重要的是要记住，尽管更改尚未应用到区块链上（事务仍然可能失败），但回复处理程序已经在具有所有子消息迄今为止应用的更改的状态副本上运行。在大多数情况下，这是一件好事，但它有一个棘手的结果-如果合约递归地调用自身，那么后续的调用可能会覆盖原始消息中设置的内容。这种情况很少发生，但在某些情况下可能需要特殊处理-现在我不想深入讨论细节，但我希望你记住在演员的流程中对状态有什么样的期望。</p>
+<p>现在让我们来看看如何处理<code>2</code>-<code>4</code>选项的结果。有趣的是，即使使用<code>2</code>，即使子调用成功执行了事务，我们仍然可以查看它通过<code>Reply</code>返回的数据以及它完成后的最终状态，并且我们仍然可以决定将整个操作视为失败，这种情况下一切都会被回滚-甚至是由外部合约执行的货币转移。</p>
+<p>在我们的例子中，一个有趣的选项是<code>3</code>。因此，如果合约在失败时调用了<code>Reply</code>，我们可以决定宣称成功，并在子调用失败的情况下提交状态事务。为什么这对我们可能是相关的呢？可能是因为我们的内部列表应该保持完成任务的玩家列表，而不是支付奖励的玩家列表！因此，如果我们没有更多的货币，我们仍然希望更新列表！</p>
+<p>使用回复的最常见方式（特别是选项<code>2</code>）是实例化另一个由被调用的合约管理的合约。这种用例的思路是，创建者合约希望将创建的合约地址保留在其状态中。为了做到这一点，它必须创建一个<code>Instantiate</code>子消息，并订阅其成功响应，其中包含新创建的合约的地址。</p>
+<p>最后，你可以看到在CosmWasm中执行操作是通过分层状态变更事务来构建的。只有当所有事务都成功时，子事务才能应用到区块链上，但如果子事务失败，只有它的部分会被回滚，而其他更改可能会被应用。这与大多数数据库系统的工作方式非常相似。</p>
+<h2 id="结论"><a class="header" href="#结论">结论</a></h2>
+<p>现在，你已经看到了使用Actor模型来避免重入、正确处理错误并安全地隔离合约的强大之处。这有助于我们提供CosmWasm平台的可靠安全保证。现在，让我们开始在<code>wasmd</code>区块链上玩弄真实的合约吧。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../actor-model.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../actor-model/actors-in-blockchain.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../actor-model.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../actor-model/actors-in-blockchain.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

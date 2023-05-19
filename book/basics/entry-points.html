@@ -1,0 +1,236 @@
+<!DOCTYPE HTML>
+<html lang="cn" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>入口点 - CosmWasm book cn</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Guide to building CosmWasm smart contracts">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../index.html">介绍</a></li><li class="chapter-item expanded affix "><li class="part-title">入门指南</li><li class="chapter-item expanded "><a href="../setting-up-env.html"><strong aria-hidden="true">1.</strong> 设置环境</a></li><li class="chapter-item expanded "><a href="../wasmd-quick-start.html"><strong aria-hidden="true">2.</strong> 使用wasmd快速入门</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../wasmd-quick-start/testnet.html"><strong aria-hidden="true">2.1.</strong> 测试网设置</a></li><li class="chapter-item expanded "><a href="../wasmd-quick-start/preparing-account.html"><strong aria-hidden="true">2.2.</strong> 准备账户</a></li><li class="chapter-item expanded "><a href="../wasmd-quick-start/testned-interaction.html"><strong aria-hidden="true">2.3.</strong> 与测试网交互</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">智能合约</li><li class="chapter-item expanded "><a href="../basics.html"><strong aria-hidden="true">3.</strong> 基础知识</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../basics/rust-project.html"><strong aria-hidden="true">3.1.</strong> 创建Rust项目</a></li><li class="chapter-item expanded "><a href="../basics/entry-points.html" class="active"><strong aria-hidden="true">3.2.</strong> 入口点</a></li><li class="chapter-item expanded "><a href="../basics/building-contract.html"><strong aria-hidden="true">3.3.</strong> 构建合约</a></li><li class="chapter-item expanded "><a href="../basics/query.html"><strong aria-hidden="true">3.4.</strong> 创建查询</a></li><li class="chapter-item expanded "><a href="../basics/query-testing.html"><strong aria-hidden="true">3.5.</strong> 测试查询</a></li><li class="chapter-item expanded "><a href="../basics/multitest-intro.html"><strong aria-hidden="true">3.6.</strong> 介绍multitest</a></li><li class="chapter-item expanded "><a href="../basics/state.html"><strong aria-hidden="true">3.7.</strong> 合约状态</a></li><li class="chapter-item expanded "><a href="../basics/execute.html"><strong aria-hidden="true">3.8.</strong> 执行消息</a></li><li class="chapter-item expanded "><a href="../basics/events.html"><strong aria-hidden="true">3.9.</strong> 事件、属性和数据</a></li><li class="chapter-item expanded "><a href="../basics/funds.html"><strong aria-hidden="true">3.10.</strong> 处理资金</a></li><li class="chapter-item expanded "><a href="../basics/good-practices.html"><strong aria-hidden="true">3.11.</strong> 良好的实践</a></li><li class="chapter-item expanded "><a href="../basics/fp-types.html"><strong aria-hidden="true">3.12.</strong> 浮点类型</a></li></ol></li><li class="chapter-item expanded "><a href="../actor-model.html"><strong aria-hidden="true">4.</strong> Actor模型</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../actor-model/idea.html"><strong aria-hidden="true">4.1.</strong> 概念</a></li><li class="chapter-item expanded "><a href="../actor-model/actors-in-blockchain.html"><strong aria-hidden="true">4.2.</strong> 区块链中的Actor</a></li><li class="chapter-item expanded "><a href="../actor-model/contract-as-actor.html"><strong aria-hidden="true">4.3.</strong> 合约作为Actor</a></li></ol></li><li class="chapter-item expanded "><a href="../cross-contract.html"><strong aria-hidden="true">5.</strong> 跨合约通信</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../cross-contract/design.html"><strong aria-hidden="true">5.1.</strong> 设计</a></li><li class="chapter-item expanded "><a href="../cross-contract/fixing-admin.html"><strong aria-hidden="true">5.2.</strong> 修复管理员合约</a></li><li class="chapter-item expanded "><a href="../cross-contract/map-storage.html"><strong aria-hidden="true">5.3.</strong> 映射存储</a></li><li class="chapter-item expanded "><a href="../cross-contract/working-with-time.html"><strong aria-hidden="true">5.4.</strong> 处理时间</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> 区块链间通信</div></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../impressum.html">法律信息</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">CosmWasm book cn</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="入口点"><a class="header" href="#入口点">入口点</a></h1>
+<p>典型的 Rust 应用程序从操作系统调用的 <code>fn main()</code> 函数开始。智能合约并无显著不同。当消息发送到合约时，一个被称为&quot;入口点&quot;的函数被调用。与只有一个 <code>main</code> 入口点的原生应用程序不同，智能合约有一些对应于不同消息类型的入口点：<code>instantiate</code>，<code>execute</code>，<code>query</code>，<code>sudo</code>，<code>migrate</code> 等等。</p>
+<p>首先，我们将从三个基本入口点开始：</p>
+<ul>
+<li><code>instantiate</code> 在智能合约的生命周期中只被调用一次 - 你可以将其视为合约的构造器或初始化器。</li>
+<li><code>execute</code> 用于处理能够修改合约状态的消息 - 它们被用来执行一些实际的操作。</li>
+<li><code>query</code> 用于处理请求从合约获取一些信息的消息；与 <code>execute</code> 不同，它们永远不会影响任何合约状态，只是像数据库查询一样被使用。</li>
+</ul>
+<p>转到你的 <code>src/lib.rs</code> 文件，并从 <code>instantiate</code> 入口点开始：</p>
+<pre><code class="language-rust noplayground">use cosmwasm_std::{
+    entry_point, Binary, Deps, DepsMut, Empty, Env, MessageInfo, Response, StdResult,
+};
+
+#[entry_point]
+pub fn instantiate(
+    _deps: DepsMut,
+    _env: Env,
+    _info: MessageInfo,
+    _msg: Empty,
+) -&gt; StdResult&lt;Response&gt; {
+    Ok(Response::new())
+}</code></pre>
+<p>事实上，<code>instantiate</code> 是智能合约有效所必需的唯一入口点。虽然这种形式不是很有用，但它是一个开始。让我们仔细看看入口点的结构。</p>
+<p>首先，我们开始导入一些类型以便更一致地使用。然后我们定义我们的入口点。<code>instantiate</code> 接受四个参数：</p>
+<ul>
+<li><a href="https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.DepsMut.html"><code>deps: DepsMut</code></a>
+是一个与外部世界通信的实用类型 - 它允许查询和更新合约状态，查询其他合约状态，并提供访问 <code>Api</code> 对象的途径，该对象有一些用于处理 CW 地址的辅助函数。</li>
+<li><a href="https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.Env.html"><code>env: Env</code></a>
+是一个代表执行消息时的区块链状态的对象 - 链高度和id，当前时间戳，和被调用的合约地址。</li>
+<li><a href="https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.MessageInfo.html"><code>info: MessageInfo</code></a>
+包含触发执行的消息的元信息 - 发送消息的地址，和随消息发送的链原生代币。</li>
+<li><a href="https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.Empty.html"><code>msg: Empty</code></a>
+是触发执行的消息本身 - 现在，它是代表 <code>{}</code> JSON 的 <code>Empty</code> 类型，但是这个参数的类型可以是任何可反序列化的类型，我们将来会在这里传递更复杂的类型。</li>
+</ul>
+<p>如果你对区块链还不熟悉，那么这些参数可能对你来说没有太多意义，但是在学习这个指南的过程中，我将逐一解释它们的用途。</p>
+<p>注意装饰我们入口点的重要属性 <a href="https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/attr.entry_point.html"><code>#[entry_point]</code></a>。它的目的是将整个入口点包装成 Wasm 运行时可以理解的形式。适当的 Wasm 入口点只能使用 Wasm 规范原生支持的基本类型，Rust 结构和枚举不在此列。使用这样的入口点会相当复杂，所以 CosmWasm 的创作者提供了 <code>entry_point</code> 宏。它创建了原始的 Wasm 入口点，内部调用装饰函数，并做所有必要的魔法以从 Wasm 运行时传递的参数构建我们的高级 Rust 参数。</p>
+<p>下一个要看的是返回类型。我用 <a href="https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/type.StdResult.html"><code>StdResult&lt;Response&gt;</code></a> 作为这个简单例子的返回类型，它是 <code>Result&lt;Response, StdError&gt;</code> 的别名。返回入口点类型总会是一个 <a href="https://doc.rust-lang.org/std/result/enum.Result.html"><code>Result</code></a> 类型，有一些实现 <a href="https://doc.rust-lang.org/std/string/trait.ToString.html"><code>ToString</code></a> trait 的错误类型和一个明确定义的成功情况类型。对于大多数入口点，&quot;Ok&quot; 情况将是 <a href="https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.Response.html"><code>Response</code></a> 类型，它允许将合约适配到我们的 actor 模型，我们将很快讨论这个模型。</p>
+<p>入口点的主体尽可能简单 - 它总是成功返回一个简单的空响应。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../basics/rust-project.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../basics/building-contract.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../basics/rust-project.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../basics/building-contract.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE HTML>
+<html lang="cn" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>设计 - CosmWasm book cn</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Guide to building CosmWasm smart contracts">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../index.html">介绍</a></li><li class="chapter-item expanded affix "><li class="part-title">入门指南</li><li class="chapter-item expanded "><a href="../setting-up-env.html"><strong aria-hidden="true">1.</strong> 设置环境</a></li><li class="chapter-item expanded "><a href="../wasmd-quick-start.html"><strong aria-hidden="true">2.</strong> 使用wasmd快速入门</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../wasmd-quick-start/testnet.html"><strong aria-hidden="true">2.1.</strong> 测试网设置</a></li><li class="chapter-item expanded "><a href="../wasmd-quick-start/preparing-account.html"><strong aria-hidden="true">2.2.</strong> 准备账户</a></li><li class="chapter-item expanded "><a href="../wasmd-quick-start/testned-interaction.html"><strong aria-hidden="true">2.3.</strong> 与测试网交互</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">智能合约</li><li class="chapter-item expanded "><a href="../basics.html"><strong aria-hidden="true">3.</strong> 基础知识</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../basics/rust-project.html"><strong aria-hidden="true">3.1.</strong> 创建Rust项目</a></li><li class="chapter-item expanded "><a href="../basics/entry-points.html"><strong aria-hidden="true">3.2.</strong> 入口点</a></li><li class="chapter-item expanded "><a href="../basics/building-contract.html"><strong aria-hidden="true">3.3.</strong> 构建合约</a></li><li class="chapter-item expanded "><a href="../basics/query.html"><strong aria-hidden="true">3.4.</strong> 创建查询</a></li><li class="chapter-item expanded "><a href="../basics/query-testing.html"><strong aria-hidden="true">3.5.</strong> 测试查询</a></li><li class="chapter-item expanded "><a href="../basics/multitest-intro.html"><strong aria-hidden="true">3.6.</strong> 介绍multitest</a></li><li class="chapter-item expanded "><a href="../basics/state.html"><strong aria-hidden="true">3.7.</strong> 合约状态</a></li><li class="chapter-item expanded "><a href="../basics/execute.html"><strong aria-hidden="true">3.8.</strong> 执行消息</a></li><li class="chapter-item expanded "><a href="../basics/events.html"><strong aria-hidden="true">3.9.</strong> 事件、属性和数据</a></li><li class="chapter-item expanded "><a href="../basics/funds.html"><strong aria-hidden="true">3.10.</strong> 处理资金</a></li><li class="chapter-item expanded "><a href="../basics/good-practices.html"><strong aria-hidden="true">3.11.</strong> 良好的实践</a></li><li class="chapter-item expanded "><a href="../basics/fp-types.html"><strong aria-hidden="true">3.12.</strong> 浮点类型</a></li></ol></li><li class="chapter-item expanded "><a href="../actor-model.html"><strong aria-hidden="true">4.</strong> Actor模型</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../actor-model/idea.html"><strong aria-hidden="true">4.1.</strong> 概念</a></li><li class="chapter-item expanded "><a href="../actor-model/actors-in-blockchain.html"><strong aria-hidden="true">4.2.</strong> 区块链中的Actor</a></li><li class="chapter-item expanded "><a href="../actor-model/contract-as-actor.html"><strong aria-hidden="true">4.3.</strong> 合约作为Actor</a></li></ol></li><li class="chapter-item expanded "><a href="../cross-contract.html"><strong aria-hidden="true">5.</strong> 跨合约通信</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../cross-contract/design.html" class="active"><strong aria-hidden="true">5.1.</strong> 设计</a></li><li class="chapter-item expanded "><a href="../cross-contract/fixing-admin.html"><strong aria-hidden="true">5.2.</strong> 修复管理员合约</a></li><li class="chapter-item expanded "><a href="../cross-contract/map-storage.html"><strong aria-hidden="true">5.3.</strong> 映射存储</a></li><li class="chapter-item expanded "><a href="../cross-contract/working-with-time.html"><strong aria-hidden="true">5.4.</strong> 处理时间</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> 区块链间通信</div></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../impressum.html">法律信息</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">CosmWasm book cn</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="设计"><a class="header" href="#设计">设计</a></h1>
+<p>这一次我们将讨论系统的设计。构建多合约系统往往比单独的合约复杂一些，所以我想给你一些关于本章构建内容的指引。如果你在设计上感到迷失，不用担心 - 在实施合约时一切都会变得清晰起来。现在，先浏览一遍以获得一个大致的了解。</p>
+<p>首先，让我们思考一下我们要解决的问题。我们的管理员是一个地址向量。任何已经是管理员的人都可以将其他人添加到列表中。但是这个“其他人”可能是同一个管理员账户的第二个实例，这样他的捐赠计数就会算两次！</p>
+<p>这个问题相对比较简单修复，但还有另一个问题 - 正如我们已经了解的，管理员可以创建一个只有他自己可以从中提取代币并注册为组中的另一个管理员的智能合约！通过多次实例化，即使我们阻止了多次添加相同地址，他仍然可以达到他的目标。同一个人可能拥有多个不同的地址。</p>
+<p>这看起来是一个令人不愉快的情况，但有办法来管理它。我们将要实现的方法是投票。管理员不再能够直接将另一个管理员添加到列表中，而是可以提议他们的同事成为新的管理员。这将启动一个投票过程 - 在提议创建时已经是管理员的每个人都可以支持它。如果超过半数的管理员支持新的候选人，他将立即成为管理员。</p>
+<p>这并不是最复杂的投票过程，但对于我们的目的已经足够了。</p>
+<h2 id="投票过程"><a class="header" href="#投票过程">投票过程</a></h2>
+<p>为了实现这个目标，我们将创建两个智能合约。首先，我们将重用 <a href="../basics.html">基础知识</a> 章节中的一个合约 - 它将是一个 <code>admin</code> 合约。另外，我们将添加一个 <code>voting</code> 合约。它将负责管理单个投票过程。每当管理员想要将他的朋友添加到列表中时，它将由 <code>admin</code> 合约实例化。下面是合约之间关系的示意图：</p>
+<p><img src="../mdbook-plantuml-img/66f4c7e9766997a755cbf3507f13144b5787e5da.svg" alt="" /></p>
+<p>这里是添加管理员流程图 - 假设合同上已经有5个管理员，但其中2个什么也没做：</p>
+<p><img src="../mdbook-plantuml-img/6528660a9f88cc401fb1b6e62181485b144687ae.svg" alt="" /></p>
+<p>我已经提供了一些关于合同实施的提示，但我暂时不会深入讨论它们。</p>
+<h2 id="消息转发"><a class="header" href="#消息转发">消息转发</a></h2>
+<p>我们还想添加一件事情 - 提供给管理员一种工作方式。<code>admin</code>合约将充当调用另一个合约的代理。这意味着其他外部合约将仅将我们的<code>admin</code>实例设置为可以对其执行操作的特定地址，管理员将通过这种方式执行操作。外部合约将以<code>admin</code>合约执行的方式执行操作。下面是更新后的合约图示：</p>
+<p><img src="../mdbook-plantuml-img/5ea499d765387fa9c0342773a37395cb916614ef.svg" alt="" /></p>
+<p>调用外部合约流程图：</p>
+<p><img src="../mdbook-plantuml-img/071046fb2dd72667d935d09a8cb4c0c5108e8ee3.svg" alt="" /></p>
+<p>请注意，在<code>execute</code>管理员合约消息中的<code>msg</code>是一个随意转发给外部合约的消息。在现实世界中，它将是一个Base64编码的消息，但这只是一个实现细节。</p>
+<p>最终，我们将创建一个简单的外部合约示例，以了解如何使用这种模式。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../cross-contract.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../cross-contract/fixing-admin.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../cross-contract.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../cross-contract/fixing-admin.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

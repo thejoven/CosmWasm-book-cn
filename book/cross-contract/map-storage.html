@@ -1,0 +1,417 @@
+<!DOCTYPE HTML>
+<html lang="cn" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>映射存储 - CosmWasm book cn</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Guide to building CosmWasm smart contracts">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../index.html">介绍</a></li><li class="chapter-item expanded affix "><li class="part-title">入门指南</li><li class="chapter-item expanded "><a href="../setting-up-env.html"><strong aria-hidden="true">1.</strong> 设置环境</a></li><li class="chapter-item expanded "><a href="../wasmd-quick-start.html"><strong aria-hidden="true">2.</strong> 使用wasmd快速入门</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../wasmd-quick-start/testnet.html"><strong aria-hidden="true">2.1.</strong> 测试网设置</a></li><li class="chapter-item expanded "><a href="../wasmd-quick-start/preparing-account.html"><strong aria-hidden="true">2.2.</strong> 准备账户</a></li><li class="chapter-item expanded "><a href="../wasmd-quick-start/testned-interaction.html"><strong aria-hidden="true">2.3.</strong> 与测试网交互</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">智能合约</li><li class="chapter-item expanded "><a href="../basics.html"><strong aria-hidden="true">3.</strong> 基础知识</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../basics/rust-project.html"><strong aria-hidden="true">3.1.</strong> 创建Rust项目</a></li><li class="chapter-item expanded "><a href="../basics/entry-points.html"><strong aria-hidden="true">3.2.</strong> 入口点</a></li><li class="chapter-item expanded "><a href="../basics/building-contract.html"><strong aria-hidden="true">3.3.</strong> 构建合约</a></li><li class="chapter-item expanded "><a href="../basics/query.html"><strong aria-hidden="true">3.4.</strong> 创建查询</a></li><li class="chapter-item expanded "><a href="../basics/query-testing.html"><strong aria-hidden="true">3.5.</strong> 测试查询</a></li><li class="chapter-item expanded "><a href="../basics/multitest-intro.html"><strong aria-hidden="true">3.6.</strong> 介绍multitest</a></li><li class="chapter-item expanded "><a href="../basics/state.html"><strong aria-hidden="true">3.7.</strong> 合约状态</a></li><li class="chapter-item expanded "><a href="../basics/execute.html"><strong aria-hidden="true">3.8.</strong> 执行消息</a></li><li class="chapter-item expanded "><a href="../basics/events.html"><strong aria-hidden="true">3.9.</strong> 事件、属性和数据</a></li><li class="chapter-item expanded "><a href="../basics/funds.html"><strong aria-hidden="true">3.10.</strong> 处理资金</a></li><li class="chapter-item expanded "><a href="../basics/good-practices.html"><strong aria-hidden="true">3.11.</strong> 良好的实践</a></li><li class="chapter-item expanded "><a href="../basics/fp-types.html"><strong aria-hidden="true">3.12.</strong> 浮点类型</a></li></ol></li><li class="chapter-item expanded "><a href="../actor-model.html"><strong aria-hidden="true">4.</strong> Actor模型</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../actor-model/idea.html"><strong aria-hidden="true">4.1.</strong> 概念</a></li><li class="chapter-item expanded "><a href="../actor-model/actors-in-blockchain.html"><strong aria-hidden="true">4.2.</strong> 区块链中的Actor</a></li><li class="chapter-item expanded "><a href="../actor-model/contract-as-actor.html"><strong aria-hidden="true">4.3.</strong> 合约作为Actor</a></li></ol></li><li class="chapter-item expanded "><a href="../cross-contract.html"><strong aria-hidden="true">5.</strong> 跨合约通信</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../cross-contract/design.html"><strong aria-hidden="true">5.1.</strong> 设计</a></li><li class="chapter-item expanded "><a href="../cross-contract/fixing-admin.html"><strong aria-hidden="true">5.2.</strong> 修复管理员合约</a></li><li class="chapter-item expanded "><a href="../cross-contract/map-storage.html" class="active"><strong aria-hidden="true">5.3.</strong> 映射存储</a></li><li class="chapter-item expanded "><a href="../cross-contract/working-with-time.html"><strong aria-hidden="true">5.4.</strong> 处理时间</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> 区块链间通信</div></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../impressum.html">法律信息</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">CosmWasm book cn</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="映射存储"><a class="header" href="#映射存储">映射存储</a></h1>
+<p>管理员合约中有一个需要立即改进的地方，那就是检查合约的状态：</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use cosmwasm_std::Addr;
+</span><span class="boring">use cw_storage_plus::Item;
+</span><span class="boring">
+</span>pub const ADMINS: Item&lt;Vec&lt;Addr&gt;&gt; = Item::new(&quot;admins&quot;);
+pub const DONATION_DENOM: Item&lt;String&gt; = Item::new(&quot;donation_denom&quot;);
+<span class="boring">}</span></code></pre></pre>
+<p>请注意，我们将管理员列表保存为一个向量（vector）。然而，在整个合约中，大多数情况下，我们只访问该向量的单个元素。</p>
+<p>这并不理想，因为现在，每当我们想要访问单个管理员条目时，我们首先必须对包含所有管理员的列表进行反序列化，然后对它们进行迭代，直到找到感兴趣的条目。这可能会消耗大量的计算资源，并且是完全不必要的开销 - 我们可以使用 <a href="https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html">Map</a> 存储访问器来避免这种情况。</p>
+<h2 id="map-存储"><a class="header" href="#map-存储"><code>Map</code> 存储</a></h2>
+<p>首先，让我们定义一个 Map - 在这个上下文中，它将是一组具有分配给它们的值的键，就像 Rust 中的 <code>HashMap</code> 或许多其他语言中的字典一样。我们将其定义为类似于 <code>Item</code>，但这次我们需要两种类型 - 键类型和值类型：</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use cw_storage_plus::Map;
+
+pub const STR_TO_INT_MAP: Map&lt;String, u64&gt; = Map::new(&quot;str_to_int_map&quot;);
+<span class="boring">}</span></code></pre></pre>
+<p>要在<a href="https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html"><code>Map</code></a>上存储一些项，我们使用<a href="https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.save"><code>save</code></a>方法 - 与<code>Item</code>相同：</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>STR_TO_INT_MAP.save(deps.storage, &quot;ten&quot;.to_owned(), 10);
+STR_TO_INT_MAP.save(deps.storage, &quot;one&quot;.to_owned(), 1);
+<span class="boring">}</span></code></pre></pre>
+<p>访问地图中的条目与读取项一样简单：</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let ten = STR_TO_INT_MAP.load(deps.storage, &quot;ten&quot;.to_owned())?;
+assert_eq!(ten, 10);
+
+let two = STR_TO_INT_MAP.may_load(deps.storage, &quot;two&quot;.to_owned())?;
+assert_eq!(two, None);
+<span class="boring">}</span></code></pre></pre>
+<p>显然，如果在地图中缺少元素，<a href="https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.load"><code>load</code></a> 函数将会导致错误，就像对于项一样。另一方面，<a href="https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.may_load"><code>may_load</code></a> 在元素存在时返回 <code>Some</code> 变体。</p>
+<p>另一个对地图特定的非常有用的访问器是 <a href="https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.has"><code>has</code></a> 函数，它检查地图中是否存在指定的键：</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let contains = STR_TO_INT_MAP.has(deps.storage, &quot;three&quot;.to_owned())?;
+assert!(!contains);
+<span class="boring">}</span></code></pre></pre>
+<p>最后，我们可以遍历地图的元素 - 无论是键还是键值对：</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use cosmwasm_std::Order;
+
+for k in STR_TO_INT_MAP.keys(deps.storage, None, None, Order::Ascending) {
+    let _addr = deps.api.addr_validate(k?);
+}
+
+for item in STR_TO_INT_MAP.range(deps.storage, None, None, Order::Ascending) {
+    let (_key, _value) = item?;
+}
+<span class="boring">}</span></code></pre></pre>
+<p>首先，你可能会想到传递给 <a href="https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.keys"><code>keys</code></a> 和 <a href="https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.range"><code>range</code></a> 的额外值 - 这些值是按顺序排列的：迭代元素的下限和上限，以及元素的遍历顺序。</p>
+<p>在使用典型的 Rust 迭代器时，你可能会首先创建一个包含所有元素的迭代器，然后以某种方式跳过你不感兴趣的元素。之后，你将在最后一个有趣的元素之后停止。</p>
+<p>通常情况下，这需要访问你筛选掉的元素，而这就是问题所在 - 它需要从存储中读取元素。从存储中读取元素是处理数据的昂贵部分，我们尽量避免这样做。一种方法是指示 Map 从存储中的哪个位置开始和停止反序列化元素，以便它永远不会到达范围之外的元素。</p>
+<p>还有一个需要注意的关键事项是，keys 和 range 函数返回的迭代器并不是元素的迭代器 - 它们是 <code>Result</code> 的迭代器。这是因为，尽管罕见，但可能存在这样一种情况：项应该存在，但在从存储中读取时出现错误 - 也许存储的值以我们未预料的方式进行了序列化，导致反序列化失败。这实际上是我过去在其中一个合约上工作时遇到的真实情况 - 我们更改了 Map 的值类型，然后忘记进行迁移，导致出现各种问题。</p>
+<h2 id="将-map-视为集合"><a class="header" href="#将-map-视为集合">将 Map 视为集合</a></h2>
+<p>所以我可以想象你现在可能会认为我很疯狂 - 为什么我在谈论一个 <code>Map</code>，而我们正在处理向量？显然这两者代表了两个不同的东西！还是说它们有所关联？</p>
+<p>让我们重新考虑一下我们在 <code>ADMINS</code> 向量中保存的内容 - 我们有一个期望是唯一的对象列表，这是数学集合的定义。因此，现在让我重新提出我对地图的初步定义：</p>
+<blockquote>
+<p>首先，让我们定义一个地图 - 在这个上下文中，它将是一个<em>键的集合</em>，每个键都有对应的值，就像 Rust 中的 HashMap 或许多其他语言中的字典一样。</p>
+</blockquote>
+<p>我故意在这里使用了&quot;集合&quot;这个词 - 地图内嵌了集合。它是集合的一般化或逻辑的反转 - 集合是地图的特例。如果你想象一个将每个键映射到相同值的集合，那么值变得无关紧要，这样的地图在语义上就成为一个集合。</p>
+<p>如何创建一个将所有键映射到相同值的地图？我们选择一个只有一个值的类型。通常在 Rust 中，它可能是一个 unit 类型 (<code>()</code>)，但在 CosmWasm 中，我们倾向于使用 CW 标准库中的 <a href="https://docs.rs/cosmwasm-std/1.2.4/cosmwasm_std/struct.Empty.html"><code>Empty</code></a> 类型：</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use cosmwasm_std::{Addr, Empty};
+use cw_storage_plus::Map;
+
+pub const ADMINS: Map&lt;Addr, Empty&gt; = Map::new(&quot;admins&quot;);
+<span class="boring">}</span></code></pre></pre>
+<p>现在我们需要修复合约中对地图的使用。让我们从合约的实例化开始：</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use crate::msg::InstantiateMsg;
+use crate::state::{ADMINS, DONATION_DENOM};
+use cosmwasm_std::{
+    DepsMut, Empty, Env, MessageInfo, Response, StdResult,
+};
+
+pub fn instantiate(
+    deps: DepsMut,
+    _env: Env,
+    _info: MessageInfo,
+    msg: InstantiateMsg,
+) -&gt; StdResult&lt;Response&gt; {
+    for addr in msg.admins {
+        let admin = deps.api.addr_validate(&amp;addr)?;
+        ADMINS.save(deps.storage, admin, &amp;Empty {})?;
+    }
+    DONATION_DENOM.save(deps.storage, &amp;msg.donation_denom)?;
+
+    Ok(Response::new())
+}
+<span class="boring">}</span></code></pre></pre>
+<p>并没有简化太多，但我们不再需要收集我们的地址。然后让我们转向离开逻辑：</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use crate::state::ADMINS;
+use cosmwasm_std::{DepsMut, MessageInfo};
+
+pub fn leave(deps: DepsMut, info: MessageInfo) -&gt; StdResult&lt;Response&gt; {
+    ADMINS.remove(deps.storage, info.sender.clone());
+
+    let resp = Response::new()
+        .add_attribute(&quot;action&quot;, &quot;leave&quot;)
+        .add_attribute(&quot;sender&quot;, info.sender.as_str());
+
+    Ok(resp)
+}
+<span class="boring">}</span></code></pre></pre>
+<p>在这里我们看到了一个区别 - 我们不需要加载整个向量。我们使用 <a href="https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.remove"><code>remove</code></a> 函数移除单个条目。</p>
+<p>我之前没有强调的，并且相关的是，<code>Map</code> 将每个键都作为一个单独的项存储。这样，访问单个元素的成本比使用向量更低。</p>
+<p>然而，这也有它的缺点 - 使用 Map 访问所有元素会消耗更多的 gas！一般情况下，我们会尽量避免这种情况 - 合约的线性复杂性可能导致非常昂贵的执行（从 gas 的角度）和潜在的漏洞 - 如果用户找到一种方法在这样的向量中创建许多虚拟元素，他可以使执行成本超过任何 gas 限制。</p>
+<p>不幸的是，我们的合约中有这样的迭代 - 分发流程如下：</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use crate::error::ContractError;
+use crate::state::{ADMINS, DONATION_DENOM};
+use cosmwasm_std::{
+    coins, BankMsg,DepsMut, MessageInfo, Order, Response
+};
+
+pub fn donate(deps: DepsMut, info: MessageInfo) -&gt; Result&lt;Response, ContractError&gt; {
+    let denom = DONATION_DENOM.load(deps.storage)?;
+    let admins: Result&lt;Vec&lt;_&gt;, _&gt; = ADMINS
+        .keys(deps.storage, None, None, Order::Ascending)
+        .collect();
+    let admins = admins?;
+
+    let donation = cw_utils::must_pay(&amp;info, &amp;denom)?.u128();
+
+    let donation_per_admin = donation / (admins.len() as u128);
+
+    let messages = admins.into_iter().map(|admin| BankMsg::Send {
+        to_address: admin.to_string(),
+        amount: coins(donation_per_admin, &amp;denom),
+    });
+
+    let resp = Response::new()
+        .add_messages(messages)
+        .add_attribute(&quot;action&quot;, &quot;donate&quot;)
+        .add_attribute(&quot;amount&quot;, donation.to_string())
+        .add_attribute(&quot;per_admin&quot;, donation_per_admin.to_string());
+
+    Ok(resp)
+}
+<span class="boring">}</span></code></pre></pre>
+<p>如果我必须编写这样一个合约，并且这个 <code>donate</code> 是一个关键且经常调用的流程，我会建议在这里使用 <code>Item&lt;Vec&lt;Addr&gt;&gt;</code>。希望情况并非如此 - 分发不必是线性复杂度的！这可能听起来有点疯狂，因为我们必须遍历所有接收者来分发资金，但事实并非如此 - 有一种非常好的方法可以在常数时间内完成，我将在本书后面描述。目前，我们将保持不变，承认合约的缺陷，稍后再修复。</p>
+<p>需要修复的最后一个函数是 <code>admins_list</code> 查询处理程序：</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use crate::state::ADMINS;
+use cosmwasm_std::{Deps, Order, StdResult};
+
+pub fn admins_list(deps: Deps) -&gt; StdResult&lt;AdminsListResp&gt; {
+    let admins: Result&lt;Vec&lt;_&gt;, _&gt; = ADMINS
+        .keys(deps.storage, None, None, Order::Ascending)
+        .collect();
+    let admins = admins?;
+    let resp = AdminsListResp { admins };
+    Ok(resp)
+}
+<span class="boring">}</span></code></pre></pre>
+<p>在这里，我们也存在线性复杂性的问题，但问题要小得多。</p>
+<p>首先，查询通常用于在本地节点上调用，没有 gas 成本 - 我们可以随意查询合约。</p>
+<p>而且，即使我们对执行时间/成本有一些限制，也没有理由每次都查询所有项！我们将稍后修复这个函数，添加分页功能 - 限制查询调用者的执行时间/成本，使其能够请求从给定项开始的有限数量的项。通过阅读本章，你可能已经能够想象出实现它的方式，但当我介绍常见的 CosmWasm 实践时，我将展示我们通常是如何做到这一点的。</p>
+<h2 id="参考键"><a class="header" href="#参考键">参考键</a></h2>
+<p>在我们使用地图的过程中，还有一个微妙之处可以改进。</p>
+<p>问题在于现在我们使用拥有的 Addr 键对地图进行索引。这迫使我们在想要重用键时对其进行克隆（特别是在离开实现中）。这不是一个巨大的成本，但我们可以避免它 - 我们可以将地图的键定义为引用：</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use cosmwasm_std::{Addr, Empty};
+use cw_storage_plus::Map;
+
+pub const ADMINS: Map&lt;&amp;Addr, Empty&gt; = Map::new(&quot;admins&quot;);
+pub const DONATION_DENOM: Item&lt;String&gt; = Item::new(&quot;donation_denom&quot;);
+<span class="boring">}</span></code></pre></pre>
+<p>最后，我们需要在两个地方修复地图的用法：</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use crate::state::{ADMINS, DONATION_DENOM};
+</span><span class="boring">use cosmwasm_std::{
+</span><span class="boring">    DepsMut, Empty, Env, MessageInfo, Response, StdResult,
+</span><span class="boring">};
+</span><span class="boring">
+</span>pub fn instantiate(
+    deps: DepsMut,
+    _env: Env,
+    _info: MessageInfo,
+    msg: InstantiateMsg,
+) -&gt; StdResult&lt;Response&gt; {
+    for addr in msg.admins {
+        let admin = deps.api.addr_validate(&amp;addr)?;
+        ADMINS.save(deps.storage, &amp;admin, &amp;Empty {})?;
+    }
+
+    // ...
+
+<span class="boring">   DONATION_DENOM.save(deps.storage, &amp;msg.donation_denom)?;
+</span><span class="boring">
+</span>   Ok(Response::new())
+}
+
+pub fn leave(deps: DepsMut, info: MessageInfo) -&gt; StdResult&lt;Response&gt; {
+    ADMINS.remove(deps.storage, &amp;info.sender);
+
+    // ...
+
+<span class="boring">   let resp = Response::new()
+</span><span class="boring">       .add_attribute(&quot;action&quot;, &quot;leave&quot;)
+</span><span class="boring">       .add_attribute(&quot;sender&quot;, info.sender.as_str());
+</span><span class="boring">
+</span>   Ok(resp)
+}
+<span class="boring">}</span></code></pre></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../cross-contract/fixing-admin.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../cross-contract/working-with-time.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../cross-contract/fixing-admin.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../cross-contract/working-with-time.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

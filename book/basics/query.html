@@ -1,0 +1,418 @@
+<!DOCTYPE HTML>
+<html lang="cn" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>创建查询 - CosmWasm book cn</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Guide to building CosmWasm smart contracts">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../index.html">介绍</a></li><li class="chapter-item expanded affix "><li class="part-title">入门指南</li><li class="chapter-item expanded "><a href="../setting-up-env.html"><strong aria-hidden="true">1.</strong> 设置环境</a></li><li class="chapter-item expanded "><a href="../wasmd-quick-start.html"><strong aria-hidden="true">2.</strong> 使用wasmd快速入门</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../wasmd-quick-start/testnet.html"><strong aria-hidden="true">2.1.</strong> 测试网设置</a></li><li class="chapter-item expanded "><a href="../wasmd-quick-start/preparing-account.html"><strong aria-hidden="true">2.2.</strong> 准备账户</a></li><li class="chapter-item expanded "><a href="../wasmd-quick-start/testned-interaction.html"><strong aria-hidden="true">2.3.</strong> 与测试网交互</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">智能合约</li><li class="chapter-item expanded "><a href="../basics.html"><strong aria-hidden="true">3.</strong> 基础知识</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../basics/rust-project.html"><strong aria-hidden="true">3.1.</strong> 创建Rust项目</a></li><li class="chapter-item expanded "><a href="../basics/entry-points.html"><strong aria-hidden="true">3.2.</strong> 入口点</a></li><li class="chapter-item expanded "><a href="../basics/building-contract.html"><strong aria-hidden="true">3.3.</strong> 构建合约</a></li><li class="chapter-item expanded "><a href="../basics/query.html" class="active"><strong aria-hidden="true">3.4.</strong> 创建查询</a></li><li class="chapter-item expanded "><a href="../basics/query-testing.html"><strong aria-hidden="true">3.5.</strong> 测试查询</a></li><li class="chapter-item expanded "><a href="../basics/multitest-intro.html"><strong aria-hidden="true">3.6.</strong> 介绍multitest</a></li><li class="chapter-item expanded "><a href="../basics/state.html"><strong aria-hidden="true">3.7.</strong> 合约状态</a></li><li class="chapter-item expanded "><a href="../basics/execute.html"><strong aria-hidden="true">3.8.</strong> 执行消息</a></li><li class="chapter-item expanded "><a href="../basics/events.html"><strong aria-hidden="true">3.9.</strong> 事件、属性和数据</a></li><li class="chapter-item expanded "><a href="../basics/funds.html"><strong aria-hidden="true">3.10.</strong> 处理资金</a></li><li class="chapter-item expanded "><a href="../basics/good-practices.html"><strong aria-hidden="true">3.11.</strong> 良好的实践</a></li><li class="chapter-item expanded "><a href="../basics/fp-types.html"><strong aria-hidden="true">3.12.</strong> 浮点类型</a></li></ol></li><li class="chapter-item expanded "><a href="../actor-model.html"><strong aria-hidden="true">4.</strong> Actor模型</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../actor-model/idea.html"><strong aria-hidden="true">4.1.</strong> 概念</a></li><li class="chapter-item expanded "><a href="../actor-model/actors-in-blockchain.html"><strong aria-hidden="true">4.2.</strong> 区块链中的Actor</a></li><li class="chapter-item expanded "><a href="../actor-model/contract-as-actor.html"><strong aria-hidden="true">4.3.</strong> 合约作为Actor</a></li></ol></li><li class="chapter-item expanded "><a href="../cross-contract.html"><strong aria-hidden="true">5.</strong> 跨合约通信</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../cross-contract/design.html"><strong aria-hidden="true">5.1.</strong> 设计</a></li><li class="chapter-item expanded "><a href="../cross-contract/fixing-admin.html"><strong aria-hidden="true">5.2.</strong> 修复管理员合约</a></li><li class="chapter-item expanded "><a href="../cross-contract/map-storage.html"><strong aria-hidden="true">5.3.</strong> 映射存储</a></li><li class="chapter-item expanded "><a href="../cross-contract/working-with-time.html"><strong aria-hidden="true">5.4.</strong> 处理时间</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> 区块链间通信</div></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../impressum.html">法律信息</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">CosmWasm book cn</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="创建查询"><a class="header" href="#创建查询">创建查询</a></h1>
+<p>我们已经创建了一个简单的合约，对空的实例化消息作出了反应。不幸的是，它并不是很有用。让我们稍微增加一些响应性。</p>
+<p>首先，我们需要将 <a href="https://crates.io/crates/serde"><code>serde</code></a> 库添加到我们的依赖项中。它将帮助我们进行查询消息的序列化和反序列化。更新 <code>Cargo.toml</code> 文件：</p>
+<pre><code class="language-toml">[package]
+name = &quot;contract&quot;
+version = &quot;0.1.0&quot;
+edition = &quot;2021&quot;
+
+[lib]
+crate-type = [&quot;cdylib&quot;]
+
+[dependencies]
+cosmwasm-std = { version = &quot;1.0.0-beta8&quot;, features = [&quot;staking&quot;] }
+serde = { version = &quot;1.0.103&quot;, default-features = false, features = [&quot;derive&quot;] }
+
+[dev-dependencies]
+cw-multi-test = &quot;0.13.4&quot;
+</code></pre>
+<p>现在进入你的 <code>src/lib.rs</code> 文件，添加一个新的查询入口点：</p>
+<pre><code class="language-rust noplayground">use cosmwasm_std::{
+    entry_point, to_binary, Binary, Deps, DepsMut, Empty, Env, MessageInfo,
+    Response, StdResult,
+};
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
+struct QueryResp {
+    message: String,
+}
+
+<span class="boring">#[entry_point]
+</span><span class="boring">pub fn instantiate(
+</span><span class="boring">    _deps: DepsMut,
+</span><span class="boring">    _env: Env,
+</span><span class="boring">    _info: MessageInfo,
+</span><span class="boring">    _msg: Empty,
+</span><span class="boring">) -&gt; StdResult&lt;Response&gt; {
+</span><span class="boring">    Ok(Response::new())
+</span><span class="boring">}
+</span><span class="boring">
+</span>#[entry_point]
+pub fn query(_deps: Deps, _env: Env, _msg: Empty) -&gt; StdResult&lt;Binary&gt; {
+    let resp = QueryResp {
+        message: &quot;Hello World&quot;.to_owned(),
+    };
+
+    to_binary(&amp;resp)
+}</code></pre>
+<p>请注意，为了简单起见，我省略了之前创建的实例化入口点 - 为了不给你过多的代码负担，我只会显示代码中发生变化的部分。</p>
+<p>首先，我们需要一个结构体来作为查询的返回结果。我们希望始终返回可序列化的内容。我们只需使用 <code>serde</code> 库来派生 <a href="https://docs.serde.rs/serde/trait.Serialize.html"><code>Serialize</code></a> 和 <a href="https://docs.serde.rs/serde/trait.Deserialize.html"><code>Deserialize</code></a> traits。</p>
+<p>然后，我们需要实现查询入口点。它与 <code>instantiate</code> 的入口点非常相似。第一个显著的区别是 <code>deps</code> 参数的类型。对于 <code>instantiate</code>，它是 <code>DepMut</code> 类型，但在这里我们使用了 <a href="https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.Deps.html"><code>Deps</code></a> 对象。这是因为查询不能改变智能合约的内部状态，它只能读取状态。这带来了一些后果 - 例如，无法为将来的查询实现缓存（因为它需要某种数据缓存来写入）。</p>
+<p>另一个区别是缺少 <code>info</code> 参数。这是因为执行操作的入口点（</p>
+<p>例如实例化或执行）可以根据消息元数据的不同方式执行操作 - 例如，它们可以限制谁可以执行操作（通过检查消息的发送者）。而对于查询则不同。查询仅仅是纯粹地返回一些经过转换的合约状态。它可以基于一些链上元数据计算状态（因此状态可以在一段时间后&quot;自动&quot;更改），但不能基于消息信息进行计算。</p>
+<p>请注意，我们的入口点仍然使用相同的 <code>Empty</code> 类型作为 <code>msg</code> 参数 - 这意味着我们发送给合约的查询消息仍然是一个空的 JSON 对象：<code>{}</code></p>
+<p>最后一个发生变化的地方是返回类型。与其返回成功时的 <code>Response</code> 类型，我们返回一个任意可序列化的对象。这是因为查询不使用典型的 Actor 模型消息流 - 它们无法触发任何操作，也无法以不同于查询的方式与其他合约进行通信（这由 <code>deps</code> 参数处理）。查询始终返回纯粹的数据，应该直接呈现给查询器。</p>
+<p>现在看一下实现。其中没有复杂的操作 - 我们创建了要返回的对象，并使用 <a href="https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/fn.to_binary.html"><code>to_binary</code></a> 函数将其编码为 <a href="https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.Binary.html"><code>Binary</code></a> 类型。</p>
+<h2 id="改进消息"><a class="header" href="#改进消息">改进消息</a></h2>
+<p>我们有一个查询，但查询消息存在一个问题。它总是一个空的 JSON。这非常糟糕 - 如果我们将来想要添加另一个查询，很难在查询变体之间进行合理的区分。</p>
+<p>在实践中，我们可以通过使用非空的查询消息类型来解决这个问题。改进我们的合约：</p>
+<pre><code class="language-rust noplayground"><span class="boring">use cosmwasm_std::{
+</span><span class="boring">    entry_point, to_binary, Binary, Deps, DepsMut, Empty, Env, MessageInfo, Response, StdResult,
+</span><span class="boring">};
+</span><span class="boring">use serde::{Deserialize, Serialize};
+</span><span class="boring">
+</span><span class="boring">#[derive(Serialize, Deserialize)]
+</span><span class="boring">struct QueryResp {
+</span><span class="boring">    message: String,
+</span><span class="boring">}
+</span><span class="boring">
+</span>#[derive(Serialize, Deserialize)]
+pub enum QueryMsg {
+    Greet {},
+}
+
+<span class="boring">#[entry_point]
+</span><span class="boring">pub fn instantiate(
+</span><span class="boring">    _deps: DepsMut,
+</span><span class="boring">    _env: Env,
+</span><span class="boring">    _info: MessageInfo,
+</span><span class="boring">    _msg: Empty,
+</span><span class="boring">) -&gt; StdResult&lt;Response&gt; {
+</span><span class="boring">    Ok(Response::new())
+</span><span class="boring">}
+</span><span class="boring">
+</span>#[entry_point]
+pub fn query(_deps: Deps, _env: Env, msg: QueryMsg) -&gt; StdResult&lt;Binary&gt; {
+    use QueryMsg::*;
+
+    match msg {
+        Greet {} =&gt; {
+            let resp = QueryResp {
+                message: &quot;Hello World&quot;.to_owned(),
+            };
+
+            to_binary(&amp;resp)
+        }
+    }
+}</code></pre>
+<p>现在我们为查询消息引入了适当的消息类型。它是一个<a href="https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html">枚举类型</a>，默认情况下，它将序列化为一个具有单个字段的 JSON - 字段的名称将是枚举变体的名称（在我们的例子中始终是&quot;greet&quot; - 目前至少是如此），而该字段的值将是分配给此枚举变体的对象。</p>
+<p>请注意，我们的枚举没有为唯一的 <code>Greet</code> 变体分配类型。在 Rust 中，我们通常在变体名称后不添加额外的 <code>{}</code>。但是这里的花括号是有目的的 - 如果没有它们，变体将序列化为只有字符串类型 - 因此，该变体的 JSON 表示形式将为 <code>&quot;greet&quot;</code>，而不是 <code>{ &quot;greet&quot;: {} }</code>。这种行为导致了消息模式的不一致性。通常，为了更好地表示 JSON，我们总是为可序列化的空枚举变体添加 <code>{}</code>。</p>
+<p>但是，我们还可以进一步改进代码。现在，<code>query</code> 函数有两个职责。第一个是显而易见的 - 处理查询本身。这是最初的假设，现在仍然存在。但是还有一个新的事情正在发生 - 查询消息的分发。尽管只有一个变体，但 <code>query</code> 函数很容易变成一个庞大而难以阅读的 <code>match</code> 语句。为了使代码更符合<a href="https://en.wikipedia.org/wiki/SOLID">SOLID</a>原则，我们将进行重构，并将处理 <code>greet</code> 消息的部分提取到一个单独的函数中。</p>
+<pre><code class="language-rust noplayground"><span class="boring">use cosmwasm_std::{
+</span><span class="boring">    entry_point, to_binary, Binary, Deps, DepsMut, Empty, Env, MessageInfo, Response, StdResult,
+</span><span class="boring">};
+</span><span class="boring">use serde::{Deserialize, Serialize};
+</span><span class="boring">
+</span>#[derive(Serialize, Deserialize)]
+pub struct GreetResp {
+    message: String,
+}
+
+<span class="boring">#[derive(Serialize, Deserialize)]
+</span><span class="boring">pub enum QueryMsg {
+</span><span class="boring">    Greet {},
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">#[entry_point]
+</span><span class="boring">pub fn instantiate(
+</span><span class="boring">    _deps: DepsMut,
+</span><span class="boring">    _env: Env,
+</span><span class="boring">    _info: MessageInfo,
+</span><span class="boring">    _msg: Empty,
+</span><span class="boring">) -&gt; StdResult&lt;Response&gt; {
+</span><span class="boring">    Ok(Response::new())
+</span><span class="boring">}
+</span><span class="boring">
+</span>#[entry_point]
+pub fn query(_deps: Deps, _env: Env, msg: QueryMsg) -&gt; StdResult&lt;Binary&gt; {
+    use QueryMsg::*;
+
+    match msg {
+        Greet {} =&gt; to_binary(&amp;query::greet()?),
+    }
+}
+
+mod query {
+    use super::*;
+
+    pub fn greet() -&gt; StdResult&lt;GreetResp&gt; {
+        let resp = GreetResp {
+            message: &quot;Hello World&quot;.to_owned(),
+        };
+
+        Ok(resp)
+    }
+}</code></pre>
+<p>现在看起来好多了。请注意，还有几个额外的改进。我将查询响应类型 <code>GreetResp</code> 的字段设为公共字段。因为它们现在需要从不同的模块中访问。然后，将我的新函数封装在名为 <code>query</code> 的模块中。这样可以更容易地避免名称冲突 - 将来我可以在查询和执行消息中具有相同的变体，它们的处理程序将位于不同的命名空间中。</p>
+<p><code>greet</code> 函数返回 <code>StdResult</code> 而不是 <code>GreetResp</code>，这可能是一个值得质疑的决定，因为它永远不会返回错误。这是一个风格问题，但我更喜欢在消息处理程序中保持一致性，其中大部分处理程序可能会有失败的情况 - 例如读取状态时。</p>
+<p>此外，你可以将 <code>deps</code> 和 <code>env</code> 参数传递给所有的查询处理程序以保持一致性。我对此不太喜欢，因为它引入了不必要的样板代码，不易读，但我也同意保持一致性的论点 - 我将这个决定留给你自己判断。</p>
+<h2 id="结构化合约"><a class="header" href="#结构化合约">结构化合约</a></h2>
+<p>你可以看到我们的合约现在变得稍微复杂了一些。大约 50 行可能不算太多，但在一个文件中有许多不同的实体，我认为我们可以做得更好。通常情况下，我们会将它们分为三个文件。从提取所有消息到 <code>src/msg.rs</code> 开始：</p>
+<pre><code class="language-rust noplayground">use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
+pub struct GreetResp {
+    pub message: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub enum QueryMsg {
+    Greet {},
+}</code></pre>
+<p>你可能已经注意到，我将 <code>GreetResp</code> 的字段设为公共字段。这是因为它们现在需要从不同的模块中访问。现在继续前进到 <code>src/contract.rs</code> 文件：</p>
+<pre><code class="language-rust noplayground">use crate::msg::{GreetResp, QueryMsg};
+use cosmwasm_std::{
+    to_binary, Binary, Deps, DepsMut, Empty, Env, MessageInfo, Response, StdResult,
+};
+
+pub fn instantiate(
+    _deps: DepsMut,
+    _env: Env,
+    _info: MessageInfo,
+    _msg: Empty,
+) -&gt; StdResult&lt;Response&gt; {
+    Ok(Response::new())
+}
+
+pub fn query(_deps: Deps, _env: Env, msg: QueryMsg) -&gt; StdResult&lt;Binary&gt; {
+    use QueryMsg::*;
+
+    match msg {
+        Greet {} =&gt; to_binary(&amp;query::greet()?),
+    }
+}
+
+mod query {
+    use super::*;
+
+    pub fn greet() -&gt; StdResult&lt;GreetResp&gt; {
+        let resp = GreetResp {
+            message: &quot;Hello World&quot;.to_owned(),
+        };
+
+        Ok(resp)
+    }
+}</code></pre>
+<p>我将大部分逻辑都移到了这里，所以我的 <code>src/lib.rs</code> 只是一个非常薄的库入口，除了模块定义和入口点定义之外没有其他内容。我从 <code>src/contract.rs</code> 的 <code>query</code> 函数中移除了 <code>#[entry_point]</code> 属性。我将函数的处理部分拆分出来，现在 <code>contract::query</code> 函数是负责分发查询消息的顶层查询处理程序。顶层的 <code>query</code> 函数只是一个入口点。这是一个微妙的区别，但在将来当我们不想生成入口点而保留分发函数时，它将变得有意义。我现在引入了这个拆分，以展示典型的合约结构。</p>
+<p>现在是最后一部分，<code>src/lib.rs</code> 文件：</p>
+<pre><code class="language-rust noplayground">use cosmwasm_std::{
+    entry_point, Binary, Deps, DepsMut, Empty, Env, MessageInfo, Response, StdResult,
+};
+
+mod contract;
+mod msg;
+
+#[entry_point]
+pub fn instantiate(deps: DepsMut, env: Env, info: MessageInfo, msg: Empty)
+  -&gt; StdResult&lt;Response&gt;
+{
+    contract::instantiate(deps, env, info, msg)
+}
+
+#[entry_point]
+pub fn query(deps: Deps, env: Env, msg: msg::QueryMsg)
+  -&gt; StdResult&lt;Binary&gt;
+{
+    contract::query(deps, env, msg)
+}</code></pre>
+<p>非常简单的顶层模块。定义子模块和入口点，没有其他内容。</p>
+<p>现在，当我们准备好测试合约时，让我们继续。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../basics/building-contract.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../basics/query-testing.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../basics/building-contract.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../basics/query-testing.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

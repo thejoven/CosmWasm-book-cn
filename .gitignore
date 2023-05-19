@@ -1,4 +1,3 @@
-book
 examples/**/target/
 examples/**/schema/
 .idea
