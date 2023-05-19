@@ -1,5 +1,7 @@
 # CosmWasm book 智能合约 - 简体中文｜[English](https://github.com/CosmWasm/cosmwasm)
 
+[在线阅读](https://blackbyte-area.github.io/CosmWasm-book-cn/book/)
+
 使用 Rust 编写 CosmWasm 智能合约
 
 ## 关于
