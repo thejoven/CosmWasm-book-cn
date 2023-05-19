@@ -170,7 +170,7 @@ pub const STR_TO_INT_MAP: Map&lt;String, u64&gt; = Map::new(&quot;str_to_int_map
 </span>STR_TO_INT_MAP.save(deps.storage, &quot;ten&quot;.to_owned(), 10);
 STR_TO_INT_MAP.save(deps.storage, &quot;one&quot;.to_owned(), 1);
 <span class="boring">}</span></code></pre></pre>
-<p>访问地图中的条目与读取项一样简单：</p>
+<p>访问Map中的条目与读取项一样简单：</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let ten = STR_TO_INT_MAP.load(deps.storage, &quot;ten&quot;.to_owned())?;
@@ -179,14 +179,14 @@ assert_eq!(ten, 10);
 let two = STR_TO_INT_MAP.may_load(deps.storage, &quot;two&quot;.to_owned())?;
 assert_eq!(two, None);
 <span class="boring">}</span></code></pre></pre>
-<p>显然，如果在地图中缺少元素，<a href="https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.load"><code>load</code></a> 函数将会导致错误，就像对于项一样。另一方面，<a href="https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.may_load"><code>may_load</code></a> 在元素存在时返回 <code>Some</code> 变体。</p>
-<p>另一个对地图特定的非常有用的访问器是 <a href="https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.has"><code>has</code></a> 函数，它检查地图中是否存在指定的键：</p>
+<p>显然，如果在Map中缺少元素，<a href="https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.load"><code>load</code></a> 函数将会导致错误，就像对于项一样。另一方面，<a href="https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.may_load"><code>may_load</code></a> 在元素存在时返回 <code>Some</code> 变体。</p>
+<p>另一个对Map特定的非常有用的访问器是 <a href="https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.has"><code>has</code></a> 函数，它检查Map中是否存在指定的键：</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let contains = STR_TO_INT_MAP.has(deps.storage, &quot;three&quot;.to_owned())?;
 assert!(!contains);
 <span class="boring">}</span></code></pre></pre>
-<p>最后，我们可以遍历地图的元素 - 无论是键还是键值对：</p>
+<p>最后，我们可以遍历Map的元素 - 无论是键还是键值对：</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use cosmwasm_std::Order;
@@ -205,12 +205,12 @@ for item in STR_TO_INT_MAP.range(deps.storage, None, None, Order::Ascending) {
 <p>还有一个需要注意的关键事项是，keys 和 range 函数返回的迭代器并不是元素的迭代器 - 它们是 <code>Result</code> 的迭代器。这是因为，尽管罕见，但可能存在这样一种情况：项应该存在，但在从存储中读取时出现错误 - 也许存储的值以我们未预料的方式进行了序列化，导致反序列化失败。这实际上是我过去在其中一个合约上工作时遇到的真实情况 - 我们更改了 Map 的值类型，然后忘记进行迁移，导致出现各种问题。</p>
 <h2 id="将-map-视为集合"><a class="header" href="#将-map-视为集合">将 Map 视为集合</a></h2>
 <p>所以我可以想象你现在可能会认为我很疯狂 - 为什么我在谈论一个 <code>Map</code>，而我们正在处理向量？显然这两者代表了两个不同的东西！还是说它们有所关联？</p>
-<p>让我们重新考虑一下我们在 <code>ADMINS</code> 向量中保存的内容 - 我们有一个期望是唯一的对象列表，这是数学集合的定义。因此，现在让我重新提出我对地图的初步定义：</p>
+<p>让我们重新考虑一下我们在 <code>ADMINS</code> 向量中保存的内容 - 我们有一个期望是唯一的对象列表，这是数学集合的定义。因此，现在让我重新提出我对Map的初步定义：</p>
 <blockquote>
-<p>首先，让我们定义一个地图 - 在这个上下文中，它将是一个<em>键的集合</em>，每个键都有对应的值，就像 Rust 中的 HashMap 或许多其他语言中的字典一样。</p>
+<p>首先，让我们定义一个Map - 在这个上下文中，它将是一个<em>键的集合</em>，每个键都有对应的值，就像 Rust 中的 HashMap 或许多其他语言中的字典一样。</p>
 </blockquote>
-<p>我故意在这里使用了&quot;集合&quot;这个词 - 地图内嵌了集合。它是集合的一般化或逻辑的反转 - 集合是地图的特例。如果你想象一个将每个键映射到相同值的集合，那么值变得无关紧要，这样的地图在语义上就成为一个集合。</p>
-<p>如何创建一个将所有键映射到相同值的地图？我们选择一个只有一个值的类型。通常在 Rust 中，它可能是一个 unit 类型 (<code>()</code>)，但在 CosmWasm 中，我们倾向于使用 CW 标准库中的 <a href="https://docs.rs/cosmwasm-std/1.2.4/cosmwasm_std/struct.Empty.html"><code>Empty</code></a> 类型：</p>
+<p>我故意在这里使用了&quot;集合&quot;这个词 - Map内嵌了集合。它是集合的一般化或逻辑的反转 - 集合是Map的特例。如果你想象一个将每个键映射到相同值的集合，那么值变得无关紧要，这样的Map在语义上就成为一个集合。</p>
+<p>如何创建一个将所有键映射到相同值的Map？我们选择一个只有一个值的类型。通常在 Rust 中，它可能是一个 unit 类型 (<code>()</code>)，但在 CosmWasm 中，我们倾向于使用 CW 标准库中的 <a href="https://docs.rs/cosmwasm-std/1.2.4/cosmwasm_std/struct.Empty.html"><code>Empty</code></a> 类型：</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use cosmwasm_std::{Addr, Empty};
@@ -218,7 +218,7 @@ use cw_storage_plus::Map;
 
 pub const ADMINS: Map&lt;Addr, Empty&gt; = Map::new(&quot;admins&quot;);
 <span class="boring">}</span></code></pre></pre>
-<p>现在我们需要修复合约中对地图的使用。让我们从合约的实例化开始：</p>
+<p>现在我们需要修复合约中对Map的使用。让我们从合约的实例化开始：</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use crate::msg::InstantiateMsg;
@@ -315,8 +315,8 @@ pub fn admins_list(deps: Deps) -&gt; StdResult&lt;AdminsListResp&gt; {
 <p>首先，查询通常用于在本地节点上调用，没有 gas 成本 - 我们可以随意查询合约。</p>
 <p>而且，即使我们对执行时间/成本有一些限制，也没有理由每次都查询所有项！我们将稍后修复这个函数，添加分页功能 - 限制查询调用者的执行时间/成本，使其能够请求从给定项开始的有限数量的项。通过阅读本章，你可能已经能够想象出实现它的方式，但当我介绍常见的 CosmWasm 实践时，我将展示我们通常是如何做到这一点的。</p>
 <h2 id="参考键"><a class="header" href="#参考键">参考键</a></h2>
-<p>在我们使用地图的过程中，还有一个微妙之处可以改进。</p>
-<p>问题在于现在我们使用拥有的 Addr 键对地图进行索引。这迫使我们在想要重用键时对其进行克隆（特别是在离开实现中）。这不是一个巨大的成本，但我们可以避免它 - 我们可以将地图的键定义为引用：</p>
+<p>在我们使用Map的过程中，还有一个微妙之处可以改进。</p>
+<p>问题在于现在我们使用拥有的 Addr 键对Map进行索引。这迫使我们在想要重用键时对其进行克隆（特别是在离开实现中）。这不是一个巨大的成本，但我们可以避免它 - 我们可以将Map的键定义为引用：</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use cosmwasm_std::{Addr, Empty};
@@ -325,7 +325,7 @@ use cw_storage_plus::Map;
 pub const ADMINS: Map&lt;&amp;Addr, Empty&gt; = Map::new(&quot;admins&quot;);
 pub const DONATION_DENOM: Item&lt;String&gt; = Item::new(&quot;donation_denom&quot;);
 <span class="boring">}</span></code></pre></pre>
-<p>最后，我们需要在两个地方修复地图的用法：</p>
+<p>最后，我们需要在两个地方修复Map的用法：</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">use crate::state::{ADMINS, DONATION_DENOM};

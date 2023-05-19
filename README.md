@@ -27,3 +27,7 @@ mdbook build
 ```
 
 有关使用mdbook的更多信息，请阅读其官方[书籍](https://rust-lang.github.io/mdBook/index.html)。
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=blackbyte-area/CosmWasm-book-cn&type=Date)](https://star-history.com/#blackbyte-area/CosmWasm-book-cn&Date)

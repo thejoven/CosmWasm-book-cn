@@ -31,7 +31,7 @@ STR_TO_INT_MAP.save(deps.storage, "ten".to_owned(), 10);
 STR_TO_INT_MAP.save(deps.storage, "one".to_owned(), 1);
 ```
 
-访问地图中的条目与读取项一样简单：
+访问Map中的条目与读取项一样简单：
 
 ```rust
 let ten = STR_TO_INT_MAP.load(deps.storage, "ten".to_owned())?;
@@ -41,16 +41,16 @@ let two = STR_TO_INT_MAP.may_load(deps.storage, "two".to_owned())?;
 assert_eq!(two, None);
 ```
 
-显然，如果在地图中缺少元素，[`load`](https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.load) 函数将会导致错误，就像对于项一样。另一方面，[`may_load`](https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.may_load) 在元素存在时返回 `Some` 变体。
+显然，如果在Map中缺少元素，[`load`](https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.load) 函数将会导致错误，就像对于项一样。另一方面，[`may_load`](https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.may_load) 在元素存在时返回 `Some` 变体。
 
-另一个对地图特定的非常有用的访问器是 [`has`](https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.has) 函数，它检查地图中是否存在指定的键：
+另一个对Map特定的非常有用的访问器是 [`has`](https://docs.rs/cw-storage-plus/1.0.1/cw_storage_plus/struct.Map.html#method.has) 函数，它检查Map中是否存在指定的键：
 
 ```rust
 let contains = STR_TO_INT_MAP.has(deps.storage, "three".to_owned())?;
 assert!(!contains);
 ```
 
-最后，我们可以遍历地图的元素 - 无论是键还是键值对：
+最后，我们可以遍历Map的元素 - 无论是键还是键值对：
 
 ```rust
 use cosmwasm_std::Order;
@@ -75,13 +75,13 @@ for item in STR_TO_INT_MAP.range(deps.storage, None, None, Order::Ascending) {
 
 所以我可以想象你现在可能会认为我很疯狂 - 为什么我在谈论一个 `Map`，而我们正在处理向量？显然这两者代表了两个不同的东西！还是说它们有所关联？
 
-让我们重新考虑一下我们在 `ADMINS` 向量中保存的内容 - 我们有一个期望是唯一的对象列表，这是数学集合的定义。因此，现在让我重新提出我对地图的初步定义：
+让我们重新考虑一下我们在 `ADMINS` 向量中保存的内容 - 我们有一个期望是唯一的对象列表，这是数学集合的定义。因此，现在让我重新提出我对Map的初步定义：
 
-> 首先，让我们定义一个地图 - 在这个上下文中，它将是一个*键的集合*，每个键都有对应的值，就像 Rust 中的 HashMap 或许多其他语言中的字典一样。
+> 首先，让我们定义一个Map - 在这个上下文中，它将是一个*键的集合*，每个键都有对应的值，就像 Rust 中的 HashMap 或许多其他语言中的字典一样。
 
-我故意在这里使用了"集合"这个词 - 地图内嵌了集合。它是集合的一般化或逻辑的反转 - 集合是地图的特例。如果你想象一个将每个键映射到相同值的集合，那么值变得无关紧要，这样的地图在语义上就成为一个集合。
+我故意在这里使用了"集合"这个词 - Map内嵌了集合。它是集合的一般化或逻辑的反转 - 集合是Map的特例。如果你想象一个将每个键映射到相同值的集合，那么值变得无关紧要，这样的Map在语义上就成为一个集合。
 
-如何创建一个将所有键映射到相同值的地图？我们选择一个只有一个值的类型。通常在 Rust 中，它可能是一个 unit 类型 (`()`)，但在 CosmWasm 中，我们倾向于使用 CW 标准库中的 [`Empty`](https://docs.rs/cosmwasm-std/1.2.4/cosmwasm_std/struct.Empty.html) 类型：
+如何创建一个将所有键映射到相同值的Map？我们选择一个只有一个值的类型。通常在 Rust 中，它可能是一个 unit 类型 (`()`)，但在 CosmWasm 中，我们倾向于使用 CW 标准库中的 [`Empty`](https://docs.rs/cosmwasm-std/1.2.4/cosmwasm_std/struct.Empty.html) 类型：
 
 ```rust
 use cosmwasm_std::{Addr, Empty};
@@ -90,7 +90,7 @@ use cw_storage_plus::Map;
 pub const ADMINS: Map<Addr, Empty> = Map::new("admins");
 ```
 
-现在我们需要修复合约中对地图的使用。让我们从合约的实例化开始：
+现在我们需要修复合约中对Map的使用。让我们从合约的实例化开始：
 
 ```rust
 use crate::msg::InstantiateMsg;
@@ -198,9 +198,9 @@ pub fn admins_list(deps: Deps) -> StdResult<AdminsListResp> {
 
 ## 参考键
 
-在我们使用地图的过程中，还有一个微妙之处可以改进。
+在我们使用Map的过程中，还有一个微妙之处可以改进。
 
-问题在于现在我们使用拥有的 Addr 键对地图进行索引。这迫使我们在想要重用键时对其进行克隆（特别是在离开实现中）。这不是一个巨大的成本，但我们可以避免它 - 我们可以将地图的键定义为引用：
+问题在于现在我们使用拥有的 Addr 键对Map进行索引。这迫使我们在想要重用键时对其进行克隆（特别是在离开实现中）。这不是一个巨大的成本，但我们可以避免它 - 我们可以将Map的键定义为引用：
 
 ```rust
 use cosmwasm_std::{Addr, Empty};
@@ -210,7 +210,7 @@ pub const ADMINS: Map<&Addr, Empty> = Map::new("admins");
 pub const DONATION_DENOM: Item<String> = Item::new("donation_denom");
 ```
 
-最后，我们需要在两个地方修复地图的用法：
+最后，我们需要在两个地方修复Map的用法：
 
 ```rust
 # use crate::state::{ADMINS, DONATION_DENOM};
