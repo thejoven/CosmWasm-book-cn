@@ -1,8 +1,6 @@
-# Testnet setup
+# 测试网络设置
 
-To interact with a blockchain test net, the first thing to do is pick one. I suggest our generic
-CosmWasm test net malaga-420. As `wasmd` is configured via environment variables, we will start
-with creating a `malaga.env` file that sets them to proper values:
+要与区块链测试网络交互，首先要做的是选择一个测试网络。我建议使用我们通用的CosmWasm测试网络malaga-420。由于`wasmd`是通过环境变量进行配置的，我们将开始创建一个`malaga.env`文件，并将其设置为正确的值：
 
 ```sh
 export CHAIN_ID="malaga-420"
@@ -27,7 +25,7 @@ export NODE=(--node $RPC)
 export TXFLAG=($NODE --chain-id $CHAIN_ID --gas-prices 0.05umlg --gas auto --gas-adjustment 1.3)
 ```
 
-If you are a fish user, this `malaga.fish` file may fit you better:
+如果您是Fish用户，这个`malaga.fish`文件可能更适合您：
 
 ```fish
 set -x CHAIN_ID malaga-420

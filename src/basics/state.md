@@ -1,15 +1,10 @@
-# Contract state
+# 合同状态
 
-The contract we are working on already has some behavior that can answer a query. Unfortunately, it is
-very predictable with its answers, and it has nothing to alter them. In this chapter, I introduce the
-notion of state, which would allow us to bring true life to a smart contract.
+我们正在进行的合同已经有一些能够回答查询的行为。不幸的是，它的回答非常可预测，而且没有任何东西可以改变它们。在这一章，我引入了状态的概念，这将使我们能够真正地给智能合同带来生命。
 
-The state would still be static for now - it would be initialized on contract instantiation. The state
-would contain a list of admins who would be eligible to execute messages in the future.
+目前的状态仍然是静态的 - 它将在合同实例化时初始化。状态将包含一份管理员列表，这些管理员在未来有资格执行消息。
 
-The first thing to do is to update `Cargo.toml` with yet another dependency - the
-[`storage-plus`](https://crates.io/crates/cw-storage-plus) crate with high-level bindings for CosmWasm
-smart contracts state management:
+首先要做的是更新`Cargo.toml`，增加另一个依赖项 - [`storage-plus`](https://crates.io/crates/cw-storage-plus) crate，它为CosmWasm智能合同状态管理提供了高级绑定：
 
 ```toml
 [package]
@@ -29,7 +24,7 @@ cw-storage-plus = "0.13.4"
 cw-multi-test = "0.13.4"
 ```
 
-Now create a new file where you will keep a state for the contract - we typically call it `src/state.rs`:
+现在创建一个新文件，用来保存合同的状态 - 我们通常称之为`src/state.rs`：
 
 ```rust,noplayground
 use cosmwasm_std::Addr;
@@ -38,7 +33,7 @@ use cw_storage_plus::Item;
 pub const ADMINS: Item<Vec<Addr>> = Item::new("admins");
 ```
 
-And make sure we declare the module in `src/lib.rs`:
+并确保在`src/lib.rs`中声明模块：
 
 ```rust,noplayground
 # use cosmwasm_std::{
@@ -64,26 +59,17 @@ mod state;
 # }
 ```
 
-The new thing we have here is the `ADMINS` constant of type `Item<Vec<Addr>>`. You could ask an excellent
-question here - how is the state constant? How do I modify it if it is a constant value?
+我们在这里的新东西是`ADMINS`常量，类型是`Item<Vec<Addr>>`。你可以在这里问一个很好的问题 - 状态是如何保持恒定的？如果它是一个常数值，我如何修改它？
 
-The answer is tricky - this constant is not keeping the state itself. The state is stored in the
-blockchain and is accessed via the `deps` argument passed to entry points. The storage-plus constants
-are just accessor utilities helping us access this state in a structured way.
+答案有点复杂 - 这个常数并不是保持状态本身的。状态是存储在区块链中的，通过传递给入口点的`deps`参数进行访问。storage-plus常量只是访问器工具，帮助我们以结构化的方式访问这个状态。
 
-In CosmWasm, the blockchain state is just massive key-value storage. The keys are prefixed with metainformation
-pointing to the contract which owns them (so no other contract can alter them in any way), but even after
-removing the prefixes, the single contract state is a smaller key-value pair.
+在CosmWasm中，区块链状态只是一个巨大的键值存储。键以元信息为前缀，指向
 
-`storage-plus` handles more complex state structures by additionally prefixing items keys intelligently. For now,
-we just used the simplest storage entity - an
-[`Item<_>`](https://docs.rs/cw-storage-plus/0.13.4/cw_storage_plus/struct.Item.html), which holds a single optional
-value of a given type -
-`Vec<Addr>` in this case. And what would be a key to this item in the storage? It doesn't matter to us - it would
-be figured out to be unique, based on a unique string passed to the
-[`new`](https://docs.rs/cw-storage-plus/0.13.4/cw_storage_plus/struct.Item.html#method.new) function.
+拥有它们的合同（所以没有其他合同可以以任何方式改变它们），但即使去掉前缀，单个合同状态也是一个较小的键值对。
 
-Before we would go into initializing our state, we need some better instantiate message. Go to `src/msg.rs` and create one:
+`storage-plus`通过智能地为项目键额外添加前缀来处理更复杂的状态结构。现在，我们只是使用了最简单的存储实体 - 一个[`Item<_>`](https://docs.rs/cw-storage-plus/0.13.4/cw_storage_plus/struct.Item.html)，它保存了一个给定类型的单个可选值 - 在这种情况下是`Vec<Addr>`。那么在存储中这个项目的键是什么呢？这对我们来说无关紧要 - 它会被发现是唯一的，基于传递给[`new`](https://docs.rs/cw-storage-plus/0.13.4/cw_storage_plus/struct.Item.html#method.new)函数的唯一字符串。
+
+在我们开始初始化我们的状态之前，我们需要一些更好的实例化消息。转到`src/msg.rs`并创建一个：
 
 ```rust,noplayground
 # use cosmwasm_std::Addr;
@@ -105,7 +91,7 @@ pub struct InstantiateMsg {
 # }
 ```
 
-Now go forward to instantiate the entry point in `src/contract.rs`, and initialize our state to whatever we got in the instantiation message:
+现在前进到`src/contract.rs`中的实例化入口点，并将我们的状态初始化为我们在实例化消息中得到的任何内容：
 
 ```rust,noplayground
 # use crate::msg::{GreetResp, InstantiateMsg, QueryMsg};
@@ -196,7 +182,8 @@ pub fn instantiate(
 # }
 ```
 
-We also need to update the message type on entry point in `src/lib.rs`:
+我们还需要在`src/lib.rs`中的入口点更新消息类型：
+
 
 ```rust,noplayground
 # use cosmwasm_std::{entry_point, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
@@ -223,24 +210,16 @@ pub fn instantiate(
 # }
 ```
 
-Voila, that's all that is needed to update the state!
+瞧，这就是更新状态所需要的全部内容！
 
-First, we need to transform the vector of strings into the vector of addresses to be stored. We cannot take
-addresses as a message argument because not every string is a valid address. It might be a bit confusing when
-we were working on tests. Any string could be used in the place of address. Let me explain.
+首先，我们需要将字符串的向量转换为要存储的地址的向量。我们不能把地址作为消息参数，因为并非每个字符串都是一个有效的地址。当我们在测试上工作时，这可能有点令人困惑。任何字符串都可以在地址的位置使用。让我解释一下。
 
-Every string can be technically considered an address. However, not every string is an actual existing blockchain
-address. When we keep anything of type `Addr` in the contract, we assume it is a proper address in the blockchain.
-That is why the [`addr_validate`](https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/trait.Api.html#tymethod.addr_validate)
-function exits - to check this precondition.
+从技术上讲，每个字符串都可以被认为是一个地址。然而，并非每个字符串都是实际存在的区块链地址。当我们在合同中保存任何类型的`Addr`时，我们假设它是区块链中的一个合适的地址。这就是为什么[`addr_validate`](https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/trait.Api.html#tymethod.addr_validate)函数存在的原因 - 用来检查这个前提条件。
 
-Having data to store, we use the [`save`](https://docs.rs/cw-storage-plus/0.13.4/cw_storage_plus/struct.Item.html#method.save)
-function to write it into the contract state. Note that the first argument of `save` is
-[`&mut Storage`](https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/trait.Storage.html), which is actual blockchain
-storage. As emphasized, the `Item` object stores nothing and is just an accessor. It determines how to store the data
-in the storage given to it. The second argument is the serializable data to be stored.
+有了要存储的数据，我们使用[`save`](https://docs.rs/cw-storage-plus/0.13.4/cw_storage_plus/struct.Item.html#method.save)函数将其写入合同状态。注意`save`的第一个参数是[`&mut Storage`](https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/trait.Storage.html)，这是实际的区块链存储。正如强调的那样，`Item`对象不存储任何东西，只是一个访问器。它确定如何在给定的存储中存储数据。第二个参数是要存储的可序列化数据。
 
-It is a good time to check if the regression we have passes - try running our tests:
+现在是检查我们通过的回归测试的好时机 - 尝试运行我们的测试：
+
 ```
 > cargo test
 
@@ -269,14 +248,11 @@ test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; 
 error: test failed, to rerun pass '--lib'
 ```
 
-Damn, we broke something! But be calm. Let's start with carefully reading an error message:
+哎呀，我们把什么东西弄坏了！但请保持冷静。让我们从仔细阅读错误消息开始：
 
 > Error parsing into type contract::msg::InstantiateMsg: missing field `admins`', src/contract.rs:80:14
 
-The problem is that in the test, we send an empty instantiation message in our test, but right now, our endpoint expects
-to have an `admin` field. Multi-test framework tests contract from the entry point to results, so sending messages using MT
-functions first serializes them. Then the contract deserializes them on the entry. But now it tries to deserialize the
-empty JSON to some non-empty message! We can quickly fix it by updating the test:
+问题是，在测试中，我们在测试中发送了一个空的实例化消息，但现在，我们的端点期望有一个`admin`字段。多测试框架从入口点到结果测试合同，所以使用MT函数发送消息首先会对它们进行序列化。然后合同在入口处对它们进行反序列化。但现在它试图把空的JSON反序列化为一些非空的消息！我们可以通过更新测试快速修复它：
 
 ```rust,noplayground
 # use crate::msg::{GreetResp, InstantiateMsg, QueryMsg};
@@ -375,11 +351,9 @@ empty JSON to some non-empty message! We can quickly fix it by updating the test
 # }
 ```
 
-## Testing state
+## 测试状态
 
-When the state is initialized, we want a way to test it. We want to provide a
-query to check if the instantiation affects the state. Just create a simple one
-listing all admins. Start with adding a variant for query message and a corresponding response message in `src/msg.rs`. We'll call the variant `AdminsList`, the response `AdminsListResp`, and have it return a vector of `cosmwasm_std::Addr`:
+当状态被初始化时，我们希望有一种方式来测试它。我们希望提供一个查询来检查实例化是否影响了状态。只需创建一个简单的查询来列出所有的管理员。首先在`src/msg.rs`中为查询消息和相应的响应消息添加一个变量。我们将变量命名为`AdminsList`，响应为`AdminsListResp`，并让它返回一个`cosmwasm_std::Addr`的向量：
 
 ```rust,noplayground
 # use cosmwasm_std::Addr;
@@ -400,14 +374,14 @@ pub struct AdminsListResp  {
     pub admins: Vec<Addr>,
 }
 
-[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub enum QueryMsg {
     Greet {},
     AdminsList {},
 }
 ```
 
-And implement it in `src/contract.rs`:
+并在其中实施 `src/contract.rs`:
 
 ```rust,noplayground
 use crate::msg::{AdminsListResp, GreetResp, InstantiateMsg, QueryMsg};
@@ -504,7 +478,7 @@ mod query {
 # }
 ```
 
-Now when we have the tools to test the instantiation, let's write a test case:
+现在我们有了测试实例的工具，让我们编写一个测试用例：
 
 ```rust,noplayground
 use crate::msg::{AdminsListResp, GreetResp, InstantiateMsg, QueryMsg};
@@ -652,8 +626,7 @@ mod tests {
 }
 ```
 
-The test is simple - instantiate the contract twice with different initial admins, and ensure the query result
-is proper each time. This is often the way we test our contract - we execute bunch o messages on the contract,
-and then we query it for some data, verifying if query responses are like expected.
 
-We are doing a pretty good job developing our contract. Now it is time to use the state and allow for some executions.
+测试很简单 - 用不同的初始管理员两次实例化合同，并确保每次的查询结果都是正确的。这通常是我们测试合同的方式 - 我们在合同上执行一堆消息，然后我们查询一些数据，验证查询响应是否符合预期。
+
+我们在开发合同方面做得很好。现在是时候使用状态并允许一些执行了。

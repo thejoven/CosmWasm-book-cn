@@ -1,6 +1,6 @@
-# Preparing account
+# 准备账户
 
-The first thing you need to interact with the testnet is a valid account. Start with adding a new key to the `wasmd` configuration: 
+与测试网络进行交互的第一件事是拥有一个有效的账户。首先，在`wasmd`配置中添加一个新的密钥：
 
 ```
 $ wasmd keys add wallet
@@ -12,16 +12,13 @@ $ wasmd keys add wallet
 ...
 ```
 
-As a result of this command, you get information about just the prepared account. Two things are relevant here:
-* address is your identity in the blockchain
-* mnemonic (omitted by myself in the example) is 12 words that allow you to recreate an account so you can use it, for
-example, from a different machine
+通过这个命令，您可以获得关于准备好的账户的信息。这里有两个相关的内容：
+* 地址是您在区块链中的身份
+* 助记词（在示例中由我省略）是由12个单词组成的，允许您重新创建一个账户，以便您可以在不同的设备上使用它
 
-For testing purposes, storing the mnemonic is probably never necessary, but it is critical information to keep safe in the real world.
+出于测试目的，存储助记词可能从来不是必要的，但在现实世界中，这是需要保持安全的关键信息。
 
-Now, when you create an account, you have to initialize it with some tokens - you will need them to pay for any interaction with
-blockchain - we call this the "gas cost" of an operation. Usually, you would need to buy those tokens somehow, but in testnets,
-you can typically create as many tokens as you want on your accounts. To do so on malaga network, invoke:
+现在，当您创建一个账户时，您需要用一些代币初始化它-您将需要这些代币来支付与区块链的任何交互-我们称之为操作的“燃料成本”。通常情况下，您需要以某种方式购买这些代币，但在测试网络中，您通常可以在您的账户上创建任意数量的代币。在malaga网络上，可以执行以下操作：
 
 ```
 $ curl -X POST --header "Content-Type: application/json" \
@@ -29,11 +26,9 @@ $ curl -X POST --header "Content-Type: application/json" \
   https://faucet.malaga-420.cosmwasm.com/credit
 ```
 
-It is a simple HTTP POST request to the `https://faucet.malaga-420.cosmwasm.com/credit` endpoint. The data of this request is a JSON
-containing the name of a token to mint and the address which should receive new tokens. Here we are minting `umlg` tokens, which are
-tokens used to pay gas fees in the malaga testnet.
+这是一个简单的HTTP POST请求，目标是`https://faucet.malaga-420.cosmwasm.com/credit`端点。该请求的数据是一个JSON，包含要铸造的代币名称和应该接收新代币的地址。在这里，我们铸造的是`umlg`代币，这是在malaga测试网络中用于支付燃料费用的代币。
 
-You can now verify your account tokens balance by invoking (substituting my address with yours):
+您现在可以通过调用以下命令（用您自己的地址替换我的地址）来验证您的账户代币余额：
 
 ```
 $ wasmd query bank balances wasm1wukxp2kldxae36rgjz28umqtq792twtxdfe6ux
@@ -45,4 +40,4 @@ pagination:
   total: "0"
 ```
 
-100M tokens should be plenty for playing around, and if you need more, you can always mint another batch.
+拥有100M个代币应该足够供您玩耍了，如果您需要更多，您可以随时铸造另一批代币。

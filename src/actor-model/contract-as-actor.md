@@ -1,125 +1,65 @@
-# Smart contract as an actor
+# 智能合约作为一个角色
 
-In previous chapters, we talked about the actor model and how it is implemented
-in the blockchain. Now it is time to look closer into the typical contract
-structure to understand how different features of the actor model are mapped to
-it.
+在之前的章节中，我们讨论了角色模型及其在区块链中的实现方式。现在是时候更详细地了解典型合约结构，以理解如何将角色模型的不同特性映射到其中。
 
-This will not be a step-by-step guide on contract creation, as it is a topic
-for the series itself. It would be going through contract elements roughly to
-visualize how to handle architecture in the actor model.
+这不是一个逐步创建合约的指南，因为这是系列的主题。我们将大致浏览合约元素，以便形象化地了解如何处理角色模型中的架构。
 
-## The state
+## 状态
 
-As before we would start with the state. Previously we were working with
-the `cw4-group` contract, so let's start by looking at its code. Go to
-`cw-plus/contracts/cw4-group/src`. The folder structure should look like
-this:
+与之前一样，我们将从状态开始。之前我们使用了 `cw4-group` 合约，所以让我们从查看其代码开始。进入 `cw-plus/contracts/cw4-group/src` 文件夹。文件夹结构应如下所示：
 
 ```bash
-  src
-├──  contract.rs
-├──  error.rs
-├──  helpers.rs
-├──  lib.rs
-├──  msg.rs
-└──  state.rs
+📁src
+├── 📃contract.rs
+├── 📃error.rs
+├── 📃helpers.rs
+├── 📃lib.rs
+├── 📃msg.rs
+└── 📃state.rs
 ```
+## 智能合约作为角色
 
-As you may already figure out, we want to check the `state.rs` first.
+在之前的章节中，我们讨论了角色模型以及如何在区块链中实现它。现在是时候更详细地了解典型合约结构，以理解角色模型的不同特征如何映射到合约中。
 
-The most important thing here is a couple of constants: `ADMIN`, `HOOKS`,
-`TOTAL`, and `MEMBERS`. Every one of such constants represents a single portion
-of the contract state - as tables in databases. The types of those constants
-represent what kind of table this is. The most basic ones are `Item<T>`, which
-keeps zero or one element of a given type, and `Map<K, T>` which is a key-value
-map.
+这不是一个逐步创建合约的指南，因为这是本系列的主题。我们将大致浏览合约元素，以便形象化地了解如何在角色模型中处理架构。
 
-You can see `Item` is used to keep an admin and some other data: `HOOKS`, and
-`TOTAL`. `HOOKS` is used by the `cw4-group` to allow subscription to any
-changes to a group - a contract can be added as a hook, so when the group
-changes, a message is sent to it. The `TOTAL` is just a sum of all members'
-weights.
+## 状态
 
-The `MEMBERS` in the group contract is the `SnapshotMap` - as you can imagine,
-it is a `Map`, with some steroids - this particular one, gives us access to the
-state of the map at some point in history, accessing it by the blockchain
-`height`. `height` is the count of blocks created since the beggining of
-blockchain, and it is the most atomic time representation in smart contracts.
-There is a way to access the clock time in them, but everything happening in a
-single block is considered happening in the same moment.
+如你所见，我们首先要查看的是 `state.rs`。
 
-Other types of storage objects not used in group contracts are:
+这里最重要的是几个常量：`ADMIN`、`HOOKS`、`TOTAL` 和 `MEMBERS`。每个常量代表合约状态的一个部分，就像数据库中的表一样。这些常量的类型表示了该表的类型。最基本的类型是 `Item<T>`，它保存一个给定类型的零个或一个元素，以及 `Map<K, T>`，它是一个键值映射。
 
-* `IndexedMap` - another map type, that allows accessing values
-  by a variety of keys
-* `IndexedSnapshotMap` - `IndexedMap` and `SnapshotMap` married
+你可以看到，`Item` 用于保存管理员和其他一些数据：`HOOKS` 和 `TOTAL`。`HOOKS` 由 `cw4-group` 用于允许订阅对群组的任何更改 - 合约可以作为钩子添加，因此当群组发生更改时，会发送一条消息。`TOTAL` 只是所有成员权重的总和。
 
-What is very important - every state type in the contract is accessed using
-some name. All of those types are not containers, just accessors to the state.
-Do you remember that I told you before that blockchain is our database? And
-that is correct! All those types are just ORM to this database - when we use
-them to get actual data from it, we pass a special `State` object to them, so
-they can retrieve items from it.
+`MEMBERS` 在群组合约中是 `SnapshotMap` - 正如你所想象的，它是一个 `Map`，带有一些增强功能 - 这个特殊的 `Map` 可以让我们通过区块链的 `height` 访问到某个历史时刻的映射状态。`height` 是自区块链开始以来创建的块的数量，它是智能合约中最原子的时间表示。在智能合约中，有一种方式可以访问当前的时钟时间，但在同一个区块中发生的所有操作都被认为是在同一时刻发生的。
 
-You may ask - why all that data for a contract are not auto-fetched by
-whatever is running it. That is a good question. The reason is that we want
-contracts to be lazy with fetching. Copying data is a very expensive operation,
-and for everything happening on it, someone has to pay - it is realized by gas
-cost. I told you before, that as a contract developer you don't need to worry
-about gas at all, but it was only partially true. You don't need to know
-exactly how gas is calculated, but by lowering your gas cost, you would may
-execution of your contracts cheaper which is typically a good thing. One good
-practice to achieve that is to avoid fetching data you will not use in a
-particular call.
+其他未在群组合约中使用的存储对象类型有：
 
-## Messages
+* `IndexedMap` - 另一种键值映射类型，允许通过多种键访问值
+* `IndexedSnapshotMap` - `IndexedMap` 和 `SnapshotMap` 的结合体
 
-In a blockchain, contracts communicate with each other by some JSON
-messages. They are defined in most contracts in the `msg.rs` file. Take
-a look at it.
+非常重要的一点是，合约中的每个状态类型都是通过名称进行访问的。所有这些类型都不是容器，只是访问状态的访问器。还记得我之前告诉过你，区块链是我们的数据库吗？是的，没错！所有这些类型只是我们访问该数据库的对象关系映射（ORM）- 当我们使用它们从数据库中获取实际数据时，我们向它们传递一个特殊的 `State` 对象，以便它们可以从中检索项目。
 
-There are three types on it, let's go through them one by one.
-The first one is an `InstantiateMsg`. This is the one, that is sent
-on contract instantiation. It typically contains some data which
-is needed to properly initialize it. In most cases, it is just a
-simple structure.
+你可能会问 - 为什么合约的所有这些数据不是由运行合约的任何东西自动获取的呢？这是个好问题。原因是我们希望合约在获取数据时是延迟的。复制数据是一项非常昂贵的操作，对于发生在合约上的每一件事，都有人需要付费 - 这是通过燃气成本来实现的。我之前告诉过你，作为合约开发者，你完全不需要担心燃气成本，但这只是部分正确。你不需要确切地知道燃气是如何计算的，但通过降低你的燃气成本，你可能会使合约的执行更便宜，而这通常是一件好事。一个好的实践方法是避免获取在特定调用中不会使用的数据。
 
-Then there are two enums: `ExecuteMsg`, and `QueryMsg`. They are
-enums because every single variant of them represents a different
-message which can be sent. For example, the `ExecuteMsg::UpdateAdmin`
-corresponds to the `update_admin` message we were sending previously.
+## 消息
 
-Note, that all the messages are attributed with
-`#[derive(Serialize, Deserialize)]`, and
-`#[serde(rename_all="snake_case")]`. Those attributes come from
-the [serde](https://serde.rs/) crate, and they help us with
-deserialization of them (and serialization in case of sending
-them to other contracts). The second one is not required,
-but it allows us to keep a camel-case style in our Rust code,
-and yet still have JSONs encoded with a snake-case style more
-typical to this format.
+在区块链中，合约通过一些 JSON 消息进行通信。它们在大多数合约中定义在 `msg.rs` 文件中。让我们来看一下。
 
-I encourage you to take a closer look at the `serde` documentation,
-like everything there, can be used with the messages.
+这里有三种类型，我们逐一进行介绍。
+第一种是 `InstantiateMsg`。这是在实例化合约时发送的消息。通常它包含一些数据，用于正确初始化合约。在大多数情况下，它只是一个简单的结构体。
 
-One important thing to notice - empty variants of those enums,
-tend to use the empty brackets, like `Admin {}` instead of
-more Rusty `Admin`. It is on purpose, to make JSONs cleaner,
-and it is related to how `serde` serializes enum.
+然后，还有两个枚举类型：`ExecuteMsg` 和 `QueryMsg`。它们是枚举类型，因为它们的每个变体表示可以发送的不同消息。例如，`ExecuteMsg::UpdateAdmin` 对应于我们之前发送的 `update_admin` 消息。
 
-Also worth noting is that those message types are not set in stone,
-they can be anything. This is just a convention, but sometimes
-you would see things like `ExecuteCw4Msg`, or similar. Just keep
-in mind, to keep your message name obvious in terms of their
-purpose - sticking to `ExecuteMsg`/`QueryMsg` is generally a good
-idea.
+请注意，所有的消息都带有 `#[derive(Serialize, Deserialize)]` 和 `#[serde(rename_all="snake_case")]` 属性。这些属性来自于 [serde](https://serde.rs/) crate，它们帮助我们对它们进行反序列化（以及在发送到其他合约时的序列化）。第二个属性并不是必需的，但它允许我们在 Rust 代码中保持驼峰命名风格，并且仍然以更符合 JSON 规范的蛇形命名风格进行编码。
 
-## Entry points
+我鼓励你更详细地查阅 `serde` 文档，因为其中的所有内容都可以与消息一起使用。
 
-So now, when we have our contract message, we need a way to handle
-them. They are sent to our contract via entry points. There are
-three entry points in the `cw4-group` contract:
+值得注意的一点是，这些消息类型并不是固定的，它们可以是任何类型。这只是一个约定，但有时你会看到类似于 `ExecuteCw4Msg` 的东西。只要记住，保持消息名称在目的上明确 - 遵循 `ExecuteMsg`/`QueryMsg` 是一个好主意。
+
+## 入口点
+
+现在，当我们有了合约消息，我们需要一种处理它们的方式。它们通过入口点发送到我们的合约。`cw4-group` 合约中有三个入口点：
 
 ```rust
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -145,180 +85,65 @@ pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     // ..
 }
 ```
+那些函数是由 CosmWasm 虚拟机在合约处理消息时调用的。你可以将它们视为普通程序的 `main` 函数，只是它们具有更好描述区块链本身的签名。
 
-Those functions are called by the CosmWasm virtual machine when
-a message is to be handled by contract. You can think about them
-as the `main` function of normal programs, except they have a signature
-that better describes the blockchain itself.
+非常重要的一点是，这些入口点的名称（类似于 `main` 函数）是固定的 - 这很重要，以便虚拟机知道要调用什么。
 
-What is very important is that the names of those entry points (similarly to
-the `main` function) are fixed - it is relevant, so the virtual machine knows
-exactly what to call.
+因此，让我们从第一行开始。每个入口点都带有 `#[cfg_attr(not(feature = "library"), entry_point)]` 属性。这可能看起来有点可怕，但它只是 `#[entry_point]` 的条件等效 - 该属性仅在没有设置 "library" 特性时存在。我们这样做是为了能够将我们的合约用作其他合约的依赖项 - 最终的二进制文件中只能包含每个入口点的一个副本，因此我们确保只有顶层入口点在没有此特性的情况下编译。
 
-So, let's start with the first line. Every entry point is attributed with
-`#[cfg_attr(not(feature = "library"), entry_point)]`. It may look a bit
-scary, but it is just a conditional equivalent of `#[entry_point]` -
-the attribute would be there if and only if the "library" feature is not set.
-We do this to be able to use our contracts as dependencies for other
-contracts - the final binary can contain only one copy of each entry point,
-so we make sure, that only the top-level one is compiled without this
-feature.
+`entry_point` 属性是一个宏，生成了一些样板代码。由于二进制文件由 WASM 虚拟机运行，它对 Rust 类型了解不多 - 实际的入口点签名非常不方便使用。为了解决这个问题，创建了一个宏，为我们生成了入口点，而这些入口点只是调用我们的函数。
 
-The `entry_point` attribute is a macro that generates some boilerplate.
-As the binary is run by WASM virtual machine, it doesn't know much about
-Rust types - the actual entry point signatures are very inconvenient to
-use. To overcome this issue, there is a macro created, which generates
-entry points for us, and those entry points are just calling our functions.
+现在看看函数参数。每个入口点的最后一个参数都是触发其执行的消息（除了 `reply` - 我稍后会解释它）。除此之外，区块链还提供了其他一些参数：
 
-Now take a look at functions arguments. Every single entry point takes as
-the last argument a message which triggered the execution of it (except for
-`reply` - I will explain it later). In addition to that, there are
-additional arguments provided by blockchain:
+* `Deps` 或 `DepsMut` 对象是与智能合约上下文之外世界的接口。它允许访问合约状态，查询其他合约，并提供了一个带有一些有用的实用函数的 `Api` 对象。区别在于 `DepsMut` 允许更新状态，而 `Deps` 仅允许查看状态。
+* `Env` 对象提供执行时区块链状态的信息 - 它的高度、执行的时间戳以及有关执行合约本身的信息。
+* `MessageInfo` 对象是关于合约调用的信息 - 它包含发送消息的地址以及随消息发送的资金。
 
-* `Deps` or `DepsMut` object is the gateway to the world outside the smart contract context. It allows
-  accessing the contract state, as well as querying other contracts, and
-  also delivers an `Api` object with a couple of useful utility functions.
-  The difference is that `DepsMut` allows updating state, while `Deps`
-  allows only to look at it.
-* `Env` object delivers information about the blockchain state at the
-  moment of execution - its height, the timestamp of execution and information
-  about the executing contract itself.
-* `MessageInfo` object is information about the contract call - it
-  contains the address which sends the message, and the funds sent with the
-  message.
+请记住，这些函数的签名是固定的（除了消息类型），所以在查询调用中不能将 `Deps` 替换为 `DepsMut` 以更新合约状态。
 
-Keep in mind, that the signatures of those functions are fixed (except
-the messages type), so you cannot interchange `Deps` with `DepsMut` to
-update the contract state in the query call.
+入口点的最后部分是返回类型。每个入口点都返回一个 `Result` 类型，其中包含可以转换为字符串的任何错误 - 在合约失败的情况下，返回的错误仅被记录。在大多数情况下，错误类型为合约本身定义，通常使用 [thiserror](https://docs.rs/thiserror/latest/thiserror/) crate 定义。这里不需要 `Thiserror`，但强烈建议使用它 - 使用它可以使错误定义非常直观，并提高合约的可测试性。
 
-The last portion of entry points is the return type. Every entry point returns
-a `Result` type, with any error which can be turned into a string - in case of
-contract failure, the returned error is just logged. In most cases, the error
-type is defined for a contract itself, typically using a
-[thiserror](https://docs.rs/thiserror/latest/thiserror/) crate. `Thiserror` is
-not required here, but is strongly recommended - using it makes the error
-definition very straightforward, and also improves the testability of the
-contract.
+重要的是 `Result` 的 `Ok` 部分。让我们从查询开始，因为这是最简单的部分。查询总是返回 `Ok` 情况下的 `Binary` 对象，其中只包含序列化的响应。创建它的常见方法只是在实现了 `serde::Serialize` 的对象上调用 `to_binary` 方法，它们通常在 `msg.rs` 中定义，紧邻消息类型。
 
-The important thing is the `Ok` part of `Result`. Let's start with the
-`query` because this one is the simplest. The query always returns the `Binary`
-object on the `Ok` case, which would contain just serialized response.
-The common way to create it is just calling a `to_binary` method
-on an object implementing `serde::Serialize`, and they are typically
-defined in `msg.rs` next to message types.
+其他入口点返回的类型稍微复杂一些 - `cosmwasm_std::Response` 类型。它保存了完成合约执行所需的所有信息。该类型的信息分为三个部分。
 
-Slightly more complex is the return type returned by any other entry
-point - the `cosmwasm_std::Response` type. This one keep everything
-needed to complete contract execution. There are three chunks of
-information in that.
+第一部分是 `events` 字段。它包含作为执行结果而向区块链发出的所有事件。事件的结构非常简单：它们有一个类型，即一个字符串，以及一组属性，即字符串-字符串键值对。
 
-The first one is an `events` field. It contains all events, which would
-be emitted to the blockchain as a result of the execution. Events have
-a really simple structure: they have a type, which is just a string,
-and a list of attributes which are just string-string key-value pairs.
+你可能注意到了 `Response` 上还有一个 `attributes` 字段。这只是为了方便起见 - 大多数执行只会返回一个事件，为了更容易处理，响应上直接有一组属性。所有这些属性都将转换为一个 `wasm` 事件，然后发出。因此，我认为 `events` 和 `attributes` 是同一组数据。
 
-You can notice that there is another `attributes` field on the `Response`.
-This is just for convenience - most executions would return
-only a single event, and to make it a bit easier to operate one, there
-is a set of attributes directly on response. All of them would be converted
-to a single `wasm` event which would be emitted. Because of that, I consider
-`events` and `attributes` to be the same chunk of data.
+然后我们有 `messages` 字段，类型为 `SubMsg`。这是交叉合约通信的关键。这些消息在处理完成后会被发送到其他合约。重要的是，除非合约发送的所有子消息也被处理（即使它们失败），否则整个执行不会完成。因此，如果组合合约发送了一些消息作为 `update_members` 执行的结果，只有在处理由它发送的所有消息后，执行才会被认为完成（即使它们失败）。
 
-Then we have the messages field, of `SubMsg` type. This one is the clue
-of cross-contact communication. Those messages would be sent to the
-contracts after processing. What is important - the whole execution is
-not finished, unless the processing of all sub-messages scheduled by the contract
-finishes. So, if the group contract sends some messages as a result of
-`update_members` execution, the execution would be considered done only if
-all the messages sent by it would also be handled (even if they failed).
+因此，当合约发送的所有子消息都被处理完毕后，所有子调用和顶层调用生成的所有属性都会被收集并报告给区块链。但还有一个额外的信息 - `data`。这是另一个 `Binary` 字段，与查询调用的结果完全相同，通常包含序列化的 JSON。每个合约调用都可以返回一些额外的信息，以任何格式。你可能会问 - 在这种情况下，我们为什么还要返回属性？这是因为事件和数据发出的方式完全不同。由合约发出的任何属性最终都将在区块链上可见（除非整个消息处理失败）。但对于数据来说，情况就不同了。每个合约调用只会返回单个 `data` 块，它必须决定是仅转发一个子调用的 `data` 字段，还是可能自己构造一些内容。稍后我会更详细地解释。
 
-So, when all the sub-messages sent by contract are processed, then all the
-attributes generated by all sub-calls and top-level calls are collected and
-reported to the blockchain. But there is one additional piece of information -
-the `data`. So, this is another `Binary` field, just like the result of a query
-call, and just like it, it typically contains serialized JSON. Every contract
-call can return some additional information in any format. You may ask - in
-this case, why do we even bother returning attributes? It is because of a
-completely different way of emitting events and data. Any attributes emitted by
-the contract would be visible on blockchain eventually (unless the whole
-message handling fails). So, if your contract emitted some event as a result of
-being sub-call of some bigger use case, the event would always be there visible
-to everyone. This is not true for data. Every contract call would return only
-a single `data` chunk, and it has to decide if it would just forward the `data`
-field of one of the sub-calls, or maybe it would construct something by itself.
-I would explain it in a bit more detail in a while.
+## 发送子消息
 
-## Sending submessages
+我不想详细介绍 `Response` API，因为它可以直接从文档中阅读，但我想更详细地介绍一下发送消息的部分。
 
-I don't want to go into details of the `Response` API, as it can be read
-directly from documentation, but I want to take a bit closer look at the part
-about sending messages.
+首先要使用的函数是 `add_message`，它接受 `CosmosMsg`（或可以转换为 `CosmosMsg` 的任何内容）作为参数。通过这种方式添加到响应中的消息将被发送和处理，但其执行不会对合约的结果产生影响。
 
-The first function to use here is `add_message`, which takes as an argument the
-`CosmosMsg` (or rather anything convertible to it). A message added to response
-this way would be sent and processed, and its execution would not affect the
-result of the contract at all.
+另一个要使用的函数是 `add_submessage`，它接受一个 `SubMsg` 参数。它与 `add_message` 的区别不大 - `SubMsg` 只是在 `CosmosMsg` 上添加了一些信息：`id` 字段和 `reply_on` 字段。还有一个 `gas_limit` 字段，但它并不重要 - 它只会在达到燃气阈值时使子消息处理提前失败。
 
-The other function to use is `add_submessage`, taking a `SubMsg` argument. It
-doesn't differ much from `add_message` - `SubMsg` just wraps the `CosmosMsg`,
-adding some info to it: the `id` field, and `reply_on`. There is also a
-`gas_limit` thing, but it is not so important - it just causes sub-message
-processing to fail early if the gas threshold is reached.
+简单的是 `reply_on` - 它描述了是否应在处理成功、处理失败或两者都发送 `reply` 消息。
 
-The simple thing is `reply_on` - it describes if the `reply` message should be
-sent on processing success, on failure, or both.
+`id` 字段是我们在一开始的 KFC 示例中所说的订单号的等效物。如果您发送多个不同的子消息，如果没有该字段，将无法区分它们。甚至无法确定原始消息回复处理的类型！这就是 `id` 字段存在的原因 - 发送子消息时，可以将其设置为任何值，然后在回复时，可以根据该字段确定发生了什么。
 
-The `id` field is an equivalent of the order id in our KFC example from the
-very beginning. If you send multiple different sub-messages, it would be
-impossible to distinguish them without that field. It would not even be
-possible to figure out what type of original message reply handling is! This is
-why the `id` field is there - sending a sub-message you can set it to any
-value, and then on the reply, you can figure out what is happening based on
-this field.
+一个重要的注意事项 - 您无需担心生成复杂的 id。记住，整个处理过程是原子的，一次只能进行一个执行。在大多数情况下，您的合约会在非常具体的执行中发送固定数量的子消息。因此，您可以在发送时硬编码大多数这些 id（最好使用一些常量）。
 
-An important note here - you don't need to worry about some sophisticated way
-of generating ids. Remember, that the whole processing is atomic, and only one
-execution can be in progress at once. In most cases, your contract sends a
-fixed number of sub-messages on very concrete executions. Because of that, you
-can hardcode most of those ids while sending (preferably using some constant).
-
-To easily create submessages, instead of setting all the fields separately,
-you would typically use helper constructors: `SubMsg::reply_on_success`,
-`SubMsg::reply_on_error` and `SubMsg::reply_always`.
+为了更轻松地创建子消息，您通常会使用帮助函数构造函数：`SubMsg::reply_on_success`、`SubMsg::reply_on_error` 和 `SubMsg::reply_always`。
 
 ## CosmosMsg
 
-If you took a look at the `CosmosMsg` type, you could be very surprised - there
-are so many variants of them, and it is not obvious how they relate to
-communication with other contracts.
+如果您查看了 `CosmosMsg` 类型，您可能会感到非常惊讶 - 它们有这么多的变体，而且并不明显它们与其他合约的通信如何相关。
 
-The message you are looking for is the `WasmMsg` (`CosmosMsg::Wasm` variant).
-This one is very much similar to what we already know - it has a couple of
-variants of operation to be performed by contracts: `Execute`, but also
-`Instantiate` (so we can create new contracts in contract executions), and also
-`Migrate`, `UpdateAdmin`, and `ClearAdmin` - those are used to manage
-migrations (will tell a bit about them at the end of this chapter).
+您要查找的消息是 `WasmMsg`（`CosmosMsg::Wasm` 变体）。这个消息与我们已经了解的内容非常相似 - 它具有一些操作的变体，用于合约执行：`Execute`，还有 `Instantiate`（因此我们可以在合约执行中创建新的合约），以及 `Migrate`、`UpdateAdmin` 和 `ClearAdmin` - 这些用于管理迁移（我将在本章末尾稍微介绍一下）。
 
-Another interesting message is the `BankMsg` (`CosmosMsg::Bank`). This one
-allows a contract to transfer native tokens to other contracts (or burn them -
-equivalent to transferring them to some black whole contract). I like to think
-about it as sending a message to a very special contract responsible for handling
-native tokens - this is not a true contract, as it is handled by the blockchain
-itself, but at least to me it simplifies things.
+另一个有趣的消息是 `BankMsg`（`CosmosMsg::Bank`）。它允许合约将本地代币转移到其他合约（或销毁它们 - 相当于将它们转移到某个黑洞合约）。我喜欢将其视为向一个非常特殊的合约发送消息，该合约负责处理本地代币 - 这不是真正的合约，因为它由区块链本身处理，但至少对我来说，这简化了事情。
 
-Other variants of `CosmosMsg` are not very interesting for now. The `Custom`
-one is there to allow other CosmWasm-based blockchains to add some
-blockchain-handled variant of the message. This is a reason why most
-message-related types in CosmWasm are generic over some `T` - this is just a
-blockchain-specific type of message. We will never use it in the `wasmd`. All
-other messages are related to advanced CosmWasm features, and I will not
-describe them here.
+`CosmosMsg` 的其他变体现在不是很有趣。`Custom` 是为了允许其他基于 CosmWasm 的区块链添加一些区块链处理的消息变体。这就是为什么大多数与消息相关的类型在 CosmWasm 中是针对某个 `T` 的通用类型的原因 - 这只是一种特定于区块链的消息类型。我们在 `wasmd` 中永远不会使用它。其他的消息变体与高级的 CosmWasm 功能有关，我在这里不会详细介绍。
 
-## Reply handling
+## 回复处理
 
-So now that we know how to send a submessage, it is time to talk about
-handling the reply. When sub-message processing is finished, and it is
-requested to reply, the contract is called with an entry point:
+既然我们知道如何发送子消息，现在是时候谈论一下如何处理回复了。当子消息处理完成并请求回复时，合约会通过入口点进行调用：
 
 ```rust
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -326,60 +151,21 @@ pub fn reply(deps: DepsMut, env: Env, msg: Reply) -> Result<Response, ContractEr
     // ...
 }
 ```
+`DepsMut`和`Env`参数已经很熟悉了，但是现在有一个新的参数，替代了典型的消息参数：`cosmwasm_std::Reply`。
 
-The `DepsMut`, and `Env` arguments are already familiar, but there is a new
-one, substituting the typical message argument: the `cosmwasm_std::Reply`.
+这是一种表示子消息执行状态的类型。它是经过轻微处理的`cosmwasm_std::Response`。它包含的第一个重要信息是一个`id`，这个`id`与发送子消息时设置的相同，因此现在你可以识别你的响应。另一个重要信息是`ContractResult`，它与Rust的`Result<T, String>`类型非常相似，但是它用于序列化目的。你可以使用`into_result`函数将其轻松转换为`Result`类型。
 
-This is a type representing the execution status of the sub-message. It is
-slightly processed `cosmwasm_std::Response`. The first important thing it contains
-is an `id` - the same, which you set sending sub-message, so now you can
-identify your response. The other one is the `ContractResult`, which is very
-similar to the Rust `Result<T, String>` type, except it is there for
-serialization purposes. You can easily convert it into a `Result` with an
-`into_result` function.
+在`ContractResult`的错误情况下，有一个字符串 - 正如我之前提到的，错误在执行后会转换为字符串。`Ok`情况下包含一个`SubMsgExecutionResponse`，它有两个字段：子调用发出的事件`events`和嵌入在响应中的`data`字段。
+正如之前所说，你不需要担心事件的转发 - CosmWasm会自动处理。然而，`data`就是另外一回事了。正如前面提到的，每次调用只会返回一个`data`对象。在发送子消息并且不捕获回复的情况下，`data`将始终是顶层消息返回的内容。但是当调用`reply`时情况就不同了。如果调用了`reply`，那么它将决定最终的`data`。它可以选择要么转发子消息的数据（通过返回`None`），要么覆盖它。它不能选择返回原始执行处理的数据 - 如果合约发送了等待回复的子消息，它应该不返回任何数据，除非调用了回复。
 
-In the error case of `ContracResult`, there is a string - as I mentioned
-before, errors are converted to strings right after execution. The `Ok` case
-contains `SubMsgExecutionResponse` with two fields: `events` emitted by
-sub-call, and the `data` field embedded on response.
+但是如果发送了多个子消息会发生什么？最终的`data`会包含什么？规则是 - 最后一个非`None`值。所有的子消息总是按照添加到`Response`中的顺序调用。由于顺序是确定性和明确定义的，因此始终可以轻松预测将使用哪个回复。
+## 迁移
 
-As said before, you never need to worry about forwarding events - CosmWasm
-would do it anyway. The `data` however, is another story. As mentioned before,
-every call would return only a single data object. In the case of sending
-sub-messages and not capturing a reply, it would always be whatever is returned
-by the top-level message. But it is not the case when `reply` is called. If a
-a reply is called, then it is a function deciding about the final `data`. It can
-decide to either forward the data from the sub-message (by returning `None`) or
-to overwrite it. It cannot choose, to return data from the original execution
-processing - if the contract sends sub-messages waiting for replies, it is
-supposed to not return any data, unless replies are called.
+在前面描述`WasmMsg`时，我提到了迁移。所以，迁移是合约可以执行的另一个操作，有点类似于实例化。在软件工程中，发布应用程序的更新版本是常见的事情。在区块链中也是如此 - 智能合约可以通过一些新功能进行更新。在这种情况下，会上传新的代码，并迁移合约 - 这样它就知道从这一点开始，它的消息将由另一个更新的合约代码处理。
 
-But what happens if multiple sub-messages are sent? What would the final
-`data` contain? The rule is - the last non-None. All sub-messages are always
-called in the order of adding them to the `Response`. As the order is
-deterministic and well defined, it is always easy to predict which reply would
-be used.
+然而，可能存在合约状态在旧版本和新版本中存在差异的情况。如果添加了一些信息（例如一些额外的映射 - 在迁移后它将是空的），这并不是问题。但问题是当状态发生变化时，例如字段被重命名。在这种情况下，由于（反）序列化问题，每次合约执行都会失败。或者更加微妙的情况，例如添加映射，但这个映射应该与整个合约状态同步，而不是为空。
 
-## Migrations
-
-I mentioned migrations earlier when describing the `WasmMsg`. So, migration
-is another action possible to be performed by contracts, which is kind
-of similar to instantiate. In software engineering, it is a common thing to
-release an updated version of applications. It is also a case in the blockchain -
-SmartContract can be updated with some new features. In such cases, a new
-code is uploaded, and the contract is migrated - so it knows that from
-this point, its messages are handled by another, updated contract code.
-
-However, it may be that the contract state used by the older version of the
-contract differs from the new one. It is not a problem if some info was
-added (for example some additional map - it would be just empty right
-after migration). But the problem is, when the state changes,
-for example, the field is renamed. In such a case, every contract execution
-would fail because of (de)serialization problems. Or even more subtle
-cases, like adding a map, but one which should be synchronized with the whole
-contract state, not empty.
-
-This is the purpose of the `migration` entry point. It looks like this:
+这就是`migration`入口点的目的。它的样子如下所示：
 
 ```rust
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -388,31 +174,14 @@ pub fn migrate(deps: DepsMut, env: Env, msg: MigrateMsg) -> Result<Response<T>, 
 }
 ```
 
-`MigrateMsg` is the type defined by the contract in `msg.rs`.
-The `migrate` entry point would be called at the moment of performing
-the migration, and it is responsible for making sure the state is correct
-after the migration. It is very similar to schema migrations in traditional
-database applications. And it is also kind of difficult, because of version
-management involved - you can never assume, that you are migrating a contract
-from the previous version - it can be migrated from any version, released
-anytime - even later than that version we are migrating to!
+`MigrateMsg`是在`msg.rs`中由合约定义的类型。
+`migrate`入口点将在执行迁移时调用，它负责确保迁移后状态正确。它与传统数据库应用程序中的模式迁移非常相似。由于涉及版本管理，这也有点困难 - 您永远不能假设您正在从前一个版本迁移合约 - 它可以从任何版本迁移，任何时间发布 - 甚至晚于我们要迁移到的版本！
 
-It is worth bringing back one issue from the past - the contract admin. Do you
-remember the `--no-admin` flag we set previously on every contract
-instantiation? It made our contract unmigrateable. Migrations can be performed
-only by contract admin. To be able to use it, you should pass `--admin address`
-flag instead, with the `address` being the address that would be able to
-perform migrations.
+值得回顾一下过去的一个问题 - 合约管理员。还记得我们之前在每个合约实例化时设置的 `--no-admin` 标志吗？这使得我们的合约无法进行迁移。只有合约管理员才能执行迁移。要使用迁移功能，您应该使用 `--admin address` 标志，其中 `address` 是能够执行迁移的地址。
 
 ## Sudo
 
-Sudo is the last basic entry point in `CosmWasm`, and it is the one we would
-never use in `wasmd`. It is equivalent to `CosmosMsg::Custom`, but instead of
-being a special blockchain-specific message to be sent and handled by a
-blockchain itself, it is now a special blockchain-specific message sent by the
-blockchain to contract in some conditions. There are many uses for those, but I
-will not cover them, because would not be related to `CosmWasm` itself. The
-signature of `sudo` looks like this:
+Sudo是`CosmWasm`中最后一个基本的入口点，在`wasmd`中我们永远不会使用它。它等效于 `CosmosMsg::Custom`，但是它不是由区块链自身发送和处理的特殊区块链特定消息，而是由区块链在某些情况下发送给合约的特殊区块链特定消息。这些消息有很多用途，但我不会涉及它们，因为它们与`CosmWasm`本身无关。`sudo`的签名如下所示：
 
 ```rust
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -421,6 +190,4 @@ pub fn sudo(deps: DepsMut, env: Env, msg: SudoMsg) -> Result<Response, ContractE
 }
 ```
 
-The important difference is that because `sudo` messages are blockchain
-specific, the `SudoMsg` type is typically defined by some blockchain helper
-crate, not the contract itself.
+重要的区别是，由于`sudo`消息是特定于区块链的，因此`SudoMsg`类型通常由某个区块链辅助工具crate定义，而不是合约本身定义。

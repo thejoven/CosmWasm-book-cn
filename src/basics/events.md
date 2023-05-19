@@ -1,18 +1,12 @@
-# Events attributes and data
+# 事件属性和数据
 
-The only way our contract can communicate to the world, for now, is by queries.
-Smart contracts are passive - they cannot invoke any action by themselves. They
-can do it only as a reaction to a call. But if you tried playing with `wasmd`,
-you know that execution on the blockchain can return some metadata.
+目前，我们合约与外界进行通信的唯一方式是通过查询。智能合约是被动的，它们不能自行调用任何操作。它们只能作为对调用的反应而执行。但是，如果您尝试过与wasmd进行交互，您就会知道在区块链上执行可以返回一些元数据。
 
-There are two things the contract can return to the caller: events and data.
-Events are something produced by almost every real-life smart contract. In
-contrast, data is rarely used, designed for contract-to-contract communication.
+合约可以向调用者返回两种内容：事件和数据。几乎每个现实生活中的智能合约都会产生事件。相比之下，数据很少使用，设计用于合约之间的通信。
 
-## Returning events
+## 返回事件
 
-As an example, we would add an event `admin_added` emitted by our contract on the execution of
-`AddMembers`:
+作为示例，我们将在执行`AddMembers`时，由我们的合约发出一个名为`admin_added`的事件：
 
 ```rust,noplayground
 # use crate::error::ContractError;
@@ -255,23 +249,11 @@ mod exec {
 # }
 ```
 
-An event is built from two things: an event type provided in the
-[`new`](https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.Event.html#method.new) function and attributes.
-Attributes are added to an event with
-the [`add_attributes`](https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.Event.html#method.add_attributes)
-or the  [`add_attribute`](https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.Event.html#method.add_attribute)
-call. Attributes are key-value pairs. Because an event cannot contain any list, to achieve reporting
-multiple similar actions taking place, we need to emit multiple small events instead of a collective one.
+事件由两部分构成：在[`new`](https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.Event.html#method.new)函数中提供的事件类型和属性。属性可以通过[`add_attributes`](https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.Event.html#method.add_attributes)或[`add_attribute`](https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.Event.html#method.add_attribute)方法将其添加到事件中。属性是键值对。由于事件不能包含任何列表，为了报告多个类似的事件，我们需要发出多个小事件而不是一个集合性的事件。
 
-Events are emitted by adding them to the response with
-[`add_event`](https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.Response.html#method.add_event) or
-[`add_events`](https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.Response.html#method.add_events) call.
-Additionally, there is a possibility to add attributes directly to the response. It is just sugar. By default,
-every execution emits a standard "wasm" event. Adding attributes to the result adds them to the default event.
+通过使用[`add_event`](https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.Response.html#method.add_event)或[`add_events`](https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.Response.html#method.add_events)方法将事件添加到响应中来发出事件。此外，还可以直接将属性添加到响应中。这只是一种简化方式。默认情况下，每次执行都会发出一个标准的"wasm"事件。将属性添加到结果中会将它们添加到默认事件中。
 
-We can check if events are properly emitted by contract. It is not always done, as it is much of boilerplate in
-test, but events are, generally, more like logs - not necessarily considered main contract logic. Let's now write
-single test checking if execution emits events:
+我们可以检查合约是否正确发出了事件。这并不总是在测试中完成的，因为它在测试中往往是样板代码，而事件通常更像日志-并不一定被视为主要的合约逻辑。现在，让我们编写一个测试，检查执行是否发出了事件：
 
 ```rust,noplayground
 # use crate::error::ContractError;
@@ -582,22 +564,8 @@ mod tests {
 }
 ```
 
-As you can see, testing events on a simple test made it clunky. First of all,
-every string is heavily string-based - a lack of type control makes writing
-such tests difficult. Also, even types are prefixed with "wasm-" - it may not
-be a huge problem, but it doesn't clarify verification. But the problem is, how
-layered events structure are, which makes verifying them tricky. Also, the
-"wasm" event is particularly tricky, as it contains an implied attribute -
-`_contract_addr` containing an address called a contract. My general rule is -
-do not test emitted events unless some logic depends on them.
+正如您所见，在简单的测试中测试事件变得有些笨拙。首先，每个字符串都以字符串为基础-缺乏类型控制使得编写此类测试困难。而且，即使类型带有"wasm-"前缀-这可能不是一个很大的问题，但它并没有澄清验证的意义。但问题是，事件结构有多层，这使得验证它们变得棘手。而且，"wasm"事件特别棘手，因为它包含一个暗含的属性-`_contract_addr`，其中包含一个称为合约的地址。我的一般规则是-除非某些逻辑依赖于它们，否则不要测试发出的事件。
 
-## Data
+## 数据
 
-Besides events, any smart contract execution may produce a `data` object. In contrast to events, `data`
-can be structured. It makes it a way better choice to perform any communication logic relies on. On the
-other hand, it turns out it is very rarely helpful outside of contract-to-contract communication. Data
-is always only one single object on the response, which is set using the
-[`set_data`](https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.Response.html#method.set_data) function.
-Because of its low usefulness in a single contract environment, we will not spend time on it right now - an
-example of it will be covered later when contract-to-contract communication will be discussed. Until then,
-it is just helpful to know such an entity exists.
+除了事件之外，任何智能合约执行都可以产生一个`data`对象。与事件不同，`data`可以是结构化的。这使得它成为执行任何依赖于通信逻辑的更好选择。另一方面，事实证明，在合约之间的通信之外，它很少有帮助。`data`始终只是响应中的单个对象，可以使用[`set_data`](https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/struct.Response.html#method.set_data)函数设置。由于在单个合约环境中它的用处较低，我们现在不会花时间详细讨论它-稍后在讨论合约之间通信时将涵盖它的示例。在那之前，了解这样的实体存在是有帮助的。

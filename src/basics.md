@@ -1,4 +1,4 @@
-# Basics
+# 基础知识
 
-In this chapter, we will go through creating basic smart contracts step by step.
-I will try to explain the core ideas behind CosmWasm and the typical contract structure.
+在本章中，我们将逐步介绍创建基本智能合约的过程。
+我将尝试解释CosmWasm背后的核心思想和典型的合约结构。

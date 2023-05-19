@@ -1,34 +1,32 @@
-# Legal Information
+# 法律信息
 
-Infomation according to § 5 TMG
+根据《德国电子商务法》第5条
 
-## Provider
+## 提供者
 
 Confio GmbH  
-7th Floor  
-Potsdamer Platz 1  
-10785 Berlin
+柏林市波茨坦广场1号7楼  
+10785 柏林
 
-## Managing Director
+## 总经理
 
 Simon Warta
 
-## Contact
+## 联系方式
 
 [hello@confio.gmbh](mailto:hello@confio.gmbh)
 
-## Commercial Register
+## 商业注册信息
 
-HRB 221575, Amtsgericht Charlottenburg
+商业注册号 HRB 221575，柏林查洛腾堡法院
 
-## VAT number
+## 增值税号码
 
 DE339802279
 
-## Responsible for the content
+## 内容负责人
 
 Simon Warta  
-c/o Confio GmbH  
-7th Floor  
-Potsdamer Platz 1  
-10785 Berlin
+Confio GmbH  
+柏林市波茨坦广场1号7楼  
+10785 柏林

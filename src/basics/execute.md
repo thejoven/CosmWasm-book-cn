@@ -1,16 +1,13 @@
-# Execution messages
+# 执行消息
 
-We went through instantiate and query messages. It is finally time to introduce the last basic entry point -
-the execute messages. It is similar to what we have done so far that I expect this to be just chilling and
-revisiting our knowledge. I encourage you to try implementing what I am describing here on your own as an
-exercise - without checking out the source code.
+我们已经了解了实例化和查询消息。现在终于到了介绍最后一个基本入口点 - 执行消息的时候了。这与我们迄今为止所做的类似，我希望这只是放松和复习我们的知识。我鼓励你尝试自己实现我在这里描述的内容作为一个练习 - 不需要查看源代码。
 
-The idea of the contract will be easy - every contract admin would be eligible to call two execute messages:
+合同的想法很简单 - 每个合同管理员都有资格调用两个执行消息：
 
-* `AddMembers` message would allow the admin to add another address to the admin's list
-* `Leave` would allow and admin to remove himself from the list
+* `AddMembers`消息将允许管理员向管理员列表中添加另一个地址
+* `Leave`将允许管理员从列表中删除自己
 
-Not too complicated. Let's go coding. Start with defining messages:
+不太复杂。让我们开始编码。从定义消息开始：
 
 ```rust,noplayground
 # use cosmwasm_std::Addr;
@@ -44,7 +41,7 @@ pub enum ExecuteMsg {
 # }
 ```
 
-And implement entry point:
+实现入口点：
 
 ```rust,noplayground
 use crate::msg::{AdminsListResp, ExecuteMsg, GreetResp, InstantiateMsg, QueryMsg};
@@ -241,7 +238,7 @@ mod exec {
 # }
 ```
 
-The entry point itself also has to be created in `src/lib.rs`:
+入口点本身也必须被创建 `src/lib.rs`:
 
 ```rust,noplayground
 use cosmwasm_std::{entry_point, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
@@ -271,38 +268,17 @@ pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
     contract::query(deps, env, msg)
 }
 ```
+有几个新东西，但没有什么特别的。首先是我如何接触到消息发送者，以验证他是否是管理员或者从列表中删除他 - 我使用了`MessageInfo`的`info.sender`字段，这就是它的样子 - 成员。由于消息总是从适当的地址发送的，`sender`已经是`Addr`类型 - 无需验证它。另一个新东西是`Item`上的[`update`](https://docs.rs/cw-storage-plus/0.13.4/cw_storage_plus/struct.Item.html#method.update)函数 - 它使得实体的读取和更新更加高效。可以通过首先读取管理员，然后更新和存储结果来做到这一点。
 
-There are a couple of new things, but nothing significant. First is how do I reach the message sender
-to verify he is an admin or remove him from the list - I used the `info.sender` field of `MessageInfo`,
-which is how it looks like - the member. As the message is always sent from the proper address, the
-`sender` is already of the `Addr` type - no need to validate it. Another new thing is the
-[`update`](https://docs.rs/cw-storage-plus/0.13.4/cw_storage_plus/struct.Item.html#method.update)
-function on an `Item` - it makes a read and update of an entity potentially more efficient. It is
-possible to do it by reading admins first, then updating and storing the result.
+你可能已经注意到，当我们使用`Item`时，我们总是假设有什么东西在那里。但是没有什么强迫我们在实例化时初始化`ADMINS`值！那么那里发生了什么？好吧，`load`和`update`函数都会返回一个错误。但是有一个[`may_load`](https://docs.rs/cw-storage-plus/0.13.4/cw_storage_plus/struct.Item.html#method.may_load)函数，它返回`StdResult<Option<T>>` - 在存储为空的情况下，它会返回`Ok(None)`。甚至有可能通过[`remove`](https://docs.rs/cw-storage-plus/0.13.4/cw_storage_plus/struct.Item.html#method.remove)函数从存储中删除现有的项目。
 
-You probably noticed that when working with `Item`, we always assume something
-is there. But nothing forces us to initialize the `ADMINS` value on
-instantiation! So what happens there? Well, both `load` and `update` functions
-would return an error. But there is a
-[`may_load`](https://docs.rs/cw-storage-plus/0.13.4/cw_storage_plus/struct.Item.html#method.may_load)
-function, which returns `StdResult<Option<T>>` - it would return `Ok(None)` in
-case of empty storage. There is even a possibility to remove an existing item
-from storage with the
-[`remove`](https://docs.rs/cw-storage-plus/0.13.4/cw_storage_plus/struct.Item.html#method.remove)
-function.
+需要改进的一点是错误处理。在验证发送者是否为管理员时，我们返回一些任意字符串作为错误。我们可以做得更好。
 
-One thing to improve is error handling. While validating the sender to be admin, we are returning
-some arbitrary string as an error. We can do better.
+## 错误处理
 
-## Error handling
+在我们的合同中，现在有一个错误情况，当一个用户试图执行`AddMembers`而他自己不是管理员时。在[`StdError`](https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/enum.StdError.html)中没有适当的错误情况来报告这种情况，所以我们必须返回一个带有消息的通用错误。这不是最好的方法。
 
-In our contract, we now have an error situation when a user tries to execute `AddMembers` not being
-an admin himself. There is no proper error case in
-[`StdError`](https://docs.rs/cosmwasm-std/1.0.0/cosmwasm_std/enum.StdError.html) to report this
-situation, so we have to return a generic error with a message. It is not the best approach.
-
-For error reporting, we encourage using [`thiserror`](https://crates.io/crates/thiserror/1.0.24/dependencies)
-crate. Start with updating your dependencies:
+对于错误报告，我们鼓励使用[`thiserror`](https://crates.io/crates/thiserror/1.0.24/dependencies)包。首先更新你的依赖：
 
 ```toml
 [package]
@@ -323,7 +299,7 @@ thiserror = "1"
 cw-multi-test = "0.13.4"
 ```
 
-Now we define an error type in `src/error.rs`:
+现在我们定义一个错误类型 `src/error.rs`:
 
 ```rust,noplayground
 use cosmwasm_std::{Addr, StdError};
@@ -338,7 +314,7 @@ pub enum ContractError {
 }
 ```
 
-We also need to add the new module to `src/lib.rs`:
+我们还需要将新模块添加到 `src/lib.rs`:
 
 ```rust,noplayground
 # use cosmwasm_std::{entry_point, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
@@ -370,17 +346,9 @@ mod state;
 # }
 ```
 
-Using `thiserror` we define errors like a simple enum, and the crate ensures
-that the type implements
-[`std::error::Error`](https://doc.rust-lang.org/std/error/trait.Error.html)
-trait. A very nice feature of this crate is the inline definition of
-[`Display`](https://doc.rust-lang.org/std/fmt/trait.Display.html) trait by an
-`#[error]` attribute. Also, another helpful thing is the `#[from]` attribute,
-which automatically generates proper
-[`From`](https://doc.rust-lang.org/std/convert/trait.From.html) implementation,
-so it is easy to use `?` operator with `thiserror` types.
+使用`thiserror`库，我们可以像定义简单枚举一样定义错误类型，并且该库会确保该类型实现了[`std::error::Error`](https://doc.rust-lang.org/std/error/trait.Error.html) trait。该库的一个非常好的特性是通过`#[error]`属性内联定义了[`Display`](https://doc.rust-lang.org/std/fmt/trait.Display.html) trait。另外，还有一个有用的特性是`#[from]`属性，它会自动生成适当的[`From`](https://doc.rust-lang.org/std/convert/trait.From.html)实现，因此在使用`thiserror`类型时可以轻松使用`?`操作符。
 
-Now update the execute endpoint to use our new error type:
+现在更新执行端点，使用我们的新错误类型：
 
 ```rust,noplayground
 use crate::error::ContractError;
@@ -577,7 +545,7 @@ mod exec {
 # }
 ```
 
-The entry point return type also has to be updated:
+入口点的返回类型也必须更新：
 
 ```rust,noplayground
 # use cosmwasm_std::{entry_point, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
@@ -615,13 +583,11 @@ pub fn execute(
 # }
 ```
 
-## Custom error and multi-test
+## 自定义错误和多重测试
 
-Using proper custom error type has one nice upside - multi-test is maintaining error type using
-the [`anyhow`](https://crates.io/crates/anyhow) crate. It is a sibling of `thiserror`, designed
-to implement type-erased errors in a way that allows getting the original error back.
+使用正确的自定义错误类型有一个很好的好处-`multi-test`使用[`anyhow`](https://crates.io/crates/anyhow)库来维护错误类型。`anyhow`是`thiserror`的兄弟库，旨在以一种允许获取原始错误的方式实现类型擦除错误。
 
-Let's write a test that verifies that a non-admin cannot add himself to a list:
+让我们编写一个测试来验证非管理员不能将自己添加到列表中：
 
 ```rust,noplayground
 # use crate::error::ContractError;
@@ -854,27 +820,6 @@ mod tests {
     }
 }
 ```
+执行合约与任何其他调用非常相似-我们使用[`execute_contract`](https://docs.rs/cw-multi-test/0.13.4/cw_multi_test/trait.Executor.html#method.execute_contract)函数。由于执行可能会失败，我们会得到一个错误类型的返回值，但是我们不会调用`unwrap`来提取其中的值，而是期望出现一个错误-这就是[`unwrap_err`](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_err)的用途。现在，我们有了一个错误值，我们可以使用`assert_eq!`来检查它是否符合我们的预期。这里有一个小的复杂之处-`execute_contract`返回的错误是一个[`anyhow::Error`](https://docs.rs/anyhow/1.0.57/anyhow/struct.Error.html)错误，但是我们期望它是一个`ContractError`。幸运的是，正如我之前所说，`anyhow`错误可以使用[`downcast`](https://docs.rs/anyhow/1.0.57/anyhow/struct.Error.html#method.downcast)函数恢复其原始类型。紧随其后的`unwrap`是必需的，因为类型转换可能失败。原因是`downcast`并不知道底层错误中保存的类型，它通过一些上下文推断出来-在这里，它知道我们期望它是一个`ContractError`，因为进行了比较-类型推断的奇迹。但是，如果底层错误不是`ContractError`，那么`unwrap`将会引发恐慌。
 
-Executing a contract is very similar to any other call - we use an
-[`execute_contract`](https://docs.rs/cw-multi-test/0.13.4/cw_multi_test/trait.Executor.html#method.execute_contract)
-function. As the execution may fail, we get an error type out of this call, but
-instead of calling `unwrap` to extract a value out of it, we expect an error to
-occur - this is the purpose of the
-[`unwrap_err`](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_err)
-call. Now, as we have an error value, we can check if it matches what we
-expected with an `assert_eq!`. There is a slight complication - the error
-returned from `execute_contract` is an
-[`anyhow::Error`](https://docs.rs/anyhow/1.0.57/anyhow/struct.Error.html)
-error, but we expect it to be a `ContractError`. Hopefully, as I said before,
-`anyhow` errors can recover their original type using the
-[`downcast`](https://docs.rs/anyhow/1.0.57/anyhow/struct.Error.html#method.downcast)
-function. The `unwrap` right after it is needed because downcasting may fail.
-The reason is that `downcast` doesn't magically know the type kept in the
-underlying error. It deduces it by some context - here, it knows we expect it
-to be a `ContractError`, because of being compared to it - type elision
-miracles. But if the underlying error would not be a `ContractError`, then
-`unwrap` would panic.
-
-We just created a simple failure test for execution, but it is not enough to claim the contract is production-ready.
-All reasonable ok-cases should be covered for that. I encourage you to create some tests and experiment with them as
-an exercise after this chapter.
+我们刚刚为执行创建了一个简单的失败测试，但这还不足以宣称该合约已经适用于生产环境。为了达到这个目标，所有合理的正常情况都应该被覆盖到。我鼓励您在本章结束后作为练习创建一些测试并进行实验。

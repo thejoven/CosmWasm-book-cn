@@ -1,17 +1,10 @@
-# Good practices
+# 良好的实践
 
-All the relevant basics are covered. Now let's talk about some good practices.
+所有相关的基础知识都已经介绍完了。现在让我们讨论一些良好的实践。
 
-## JSON renaming
+## JSON 命名重命名
 
-Due to Rust style, all our message variants are spelled in a
-[camel-case](https://en.wikipedia.org/wiki/CamelCase). It is standard practice,
-but it has a drawback - all messages are serialized and deserialized by serde
-using those variant names. The problem is that it is more common to use [snake
-cases](https://en.wikipedia.org/wiki/Snake_case) for field names in the JSON
-world. Hopefully, there is an effortless way to tell serde, to change the names
-casing for serialization purposes. Let's update our messages with a `#[serde]`
-attribute:
+由于 Rust 的风格，我们所有的消息变体都使用 [驼峰命名法](https://en.wikipedia.org/wiki/CamelCase)。这是标准的做法，但它有一个缺点 - 所有的消息都通过 serde 进行序列化和反序列化，使用这些变体名称。问题是，在 JSON 世界中，更常见的是使用 [蛇形命名法](https://en.wikipedia.org/wiki/Snake_case) 来命名字段。幸运的是，有一种简单的方法告诉 serde，在序列化时更改字段的命名方式。让我们使用 `#[serde]` 属性更新我们的消息：
 
 ```rust,noplayground
 use cosmwasm_std::Addr;
@@ -54,9 +47,8 @@ pub enum QueryMsg {
 
 ## JSON schema
 
-Talking about JSON API, it is worth mentioning JSON Schema. It is a way of defining a shape for JSON messages.
-It is good practice to provide a way to generate schemas for contract API. The problem is that writing JSON
-schemas by hand is a pain. The good news is that there is a crate that would help us with that. Go to the `Cargo.toml`:
+谈到 JSON API，值得提到 JSON Schema。它是一种定义 JSON 消息结构的方式。
+为合约 API 提供生成模式的方法是良好的实践。问题在于手动编写 JSON 模式很麻烦。好消息是有一个 crate 可以帮助我们。打开 `Cargo.toml` 文件：
 
 ```toml
 [package]
@@ -79,10 +71,9 @@ cosmwasm-schema = "1.1.4"
 cw-multi-test = "0.13.4"
 ```
 
-There is one additional change in this file - in `crate-type` I added "rlib". "cdylib" crates cannot be used as typical
-Rust dependencies. As a consequence, it is impossible to create examples for such crates.
+在这个文件中还有一个额外的更改 - 在 `crate-type` 中我添加了 "rlib"。"cdylib" crate 不能像典型的 Rust 依赖一样使用。因此，无法为这样的 crate 创建示例。
 
-Now go back to `src/msg.rs` and add a new derive for all messages:
+现在回到 `src/msg.rs` 并为所有消息添加一个新的派生：
 
 ```rust,noplayground
 # use cosmwasm_std::Addr;
@@ -124,11 +115,8 @@ pub enum QueryMsg {
 }
 ```
 
-You may argue that all those derives look slightly clunky, and I agree.
-Hopefully, the
-[`cosmwasm-schema`](https://docs.rs/cosmwasm-schema/1.1.4/cosmwasm_schema/#)
-crate delivers a utility `cw_serde` macro, which we can use to reduce a
-boilerplate:
+你可能会认为所有这些派生看起来有些笨拙，我同意这个观点。
+幸运的是，[`cosmwasm-schema`](https://docs.rs/cosmwasm-schema/1.1.4/cosmwasm_schema/#) crate 提供了一个实用的 `cw_serde` 宏，我们可以使用它来减少样板代码：
 
 ```rust,noplayground
 # use cosmwasm_std::Addr;
@@ -164,9 +152,7 @@ pub enum QueryMsg {
 }
 ```
 
-Additionally, we have to derive the additional `QueryResponses` trait for our
-query message to correlate the message variants with responses we would
-generate for them:
+另外，我们还必须为我们的查询消息派生额外的 `QueryResponses` trait，以将消息变体与我们为其生成的响应相关联：
 
 ```rust,noplayground
 # use cosmwasm_std::Addr;
@@ -205,12 +191,9 @@ pub enum QueryMsg {
 }
 ```
 
-The `QueryResponses` is a trait that requires the `#[returns(...)]` attribute
-to all your query variants to generate additional information about the
-query-response relationship.
+`QueryResponses` 是一个 trait，要求为所有查询变体添加 `#[returns(...)]` 属性，以生成关于查询-响应关系的额外信息。
 
-Now, we want to make the `msg` module public and accessible by crates depending
-on our contract (in this case - for schema example). Update a `src/lib.rs`:
+现在，我们希望将 `msg` 模块公开并允许依赖于我们合约的 crate 访问（在本例中用于模式示例）。请更新 `src/lib.rs`：
 
 ```rust,noplayground
 # use cosmwasm_std::{entry_point, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
@@ -248,11 +231,10 @@ pub mod state;
 # }
 ```
 
-I changed the visibility of all modules - as our crate can now be used as a dependency.
-If someone would like to do so, he may need access to handlers or state. 
+我更改了所有模块的可见性 - 因为我们的 crate 现在可以作为依赖项使用。
+如果有人想这样做，他可能需要访问处理程序或状态。
 
-The next step is to create a tool generating actual schemas. We will do it by creating
-an binary in our crate. Create a new `bin/schema.rs` file:
+下一步是创建一个生成实际模式的工具。我们将通过在我们的 crate 中创建一个二进制文件来实现这个目标。创建一个新的 `bin/schema.rs` 文件：
 
 ```rust,noplayground
 use contract::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
@@ -267,8 +249,7 @@ fn main() {
 }
 ```
 
-Cargo is smart enough to recognize files in `src/bin` directory as utility
-binaries for the crate. Now we can generate our schemas:
+Cargo足够智能，能够识别`src/bin`目录中的文件作为该crate的实用程序二进制文件。现在我们可以生成我们的模式了：
 
 ```
 $ cargo run schema
@@ -278,13 +259,9 @@ Removing "/home/hashed/confio/git/book/examples/03-basics/schema/contract.json" 
 Exported the full API as /home/hashed/confio/git/book/examples/03-basics/schema/contract.json
 ```
 
-I encourage you to go to generated file to see what the schema looks like.
+我鼓励你打开生成的文件，看看模式是什么样子的。
 
-
-The problem is that, unfortunately, creating this binary makes our project fail
-to compile on the Wasm target - which is, in the end, the most important one.
-Hopefully, we don't need to build the schema binary for the Wasm target - let's
-align the `.cargo/config` file:
+问题是，不幸的是，创建这个二进制文件会导致我们的项目在Wasm目标上无法编译 - 最终，这是最重要的一个目标。幸运的是，我们不需要为Wasm目标构建模式二进制文件 - 让我们调整`.cargo/config`文件：
 
 ```toml
 [alias]
@@ -293,28 +270,20 @@ wasm-debug = "build --target wasm32-unknown-unknown --lib"
 schema = "run schema"
 ```
 
-The `--lib` flag added to `wasm` cargo aliases tells the toolchain to build
-only the library target - it would skip building any binaries. Additionally, I
-added the convenience `schema` alias so that one can generate schema calling
-simply `cargo schema`.
+通过向`wasm`的Cargo别名添加`--lib`标志，工具链将只构建库目标 - 跳过构建任何二进制文件。此外，我添加了方便的`schema`别名，这样只需简单地调用`cargo schema`就可以生成模式。
 
-## Disabling entry points for libraries
+## 禁用库的入口点
 
-Since we added the "rlib" target for the contract, it is, as mentioned before, useable as a dependency.
-The problem is that the contract depended on ours would have Wasm entry points generated twice - once
-in the dependency and once in the final contract. We can work this around by disabling generating Wasm
-entry points for the contract if the crate is used as a dependency. We would use
-[feature flags](https://doc.rust-lang.org/cargo/reference/features.html) for that.
+由于我们为合约添加了 "rlib" 目标，如前所述，它可以作为依赖项使用。问题是，依赖于我们的合约会在依赖项和最终合约中生成两次Wasm入口点。为了解决这个问题，我们可以通过在作为依赖项使用时禁用生成Wasm入口点来解决。我们可以使用[feature标志](https://doc.rust-lang.org/cargo/reference/features.html)来实现这一点。
 
-Start with updating `Cargo.toml`:
+首先更新 `Cargo.toml` 文件：
 
 ```toml
 [features]
 library = []
 ```
 
-This way, we created a new feature for our crate. Now we want to disable the `entry_point` attribute on
-entry points - we will do it by a slight update of `src/lib.rs`:
+通过这种方式，我们为我们的 crate 创建了一个新的 feature。现在我们想要在入口点上禁用 `entry_point` 属性 - 我们将通过对 `src/lib.rs` 进行轻微的更新来实现：
 
 ```rust,noplayground
 # use cosmwasm_std::{entry_point, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
@@ -352,12 +321,9 @@ pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
 }
 ```
 
-The [`cfg_attr`](https://doc.rust-lang.org/reference/conditional-compilation.html#the-cfg_attr-attribute) attribute is
-a conditional compilation attribute, similar to the `cfg` we used before for the test. It expands to the given attribute if
-the condition expands to true. In our case - it would expand to nothing if the feature "library" is enabled, or it
-would expand just to `#[entry_point]` in another case.
+[`cfg_attr`](https://doc.rust-lang.org/reference/conditional-compilation.html#the-cfg_attr-attribute) 属性是一个条件编译属性，类似于我们之前用于测试的 `cfg`。如果条件为 true，则它会扩展为给定的属性。在我们的情况下 - 如果启用了 "library" 特性，它将扩展为空，否则就只会扩展为 `#[entry_point]`。
 
-Since now to add this contract as a dependency, don't forget to enable the feature like this:
+由于现在将此合约作为依赖项添加，不要忘记像这样启用特性：
 
 ```toml
 [dependencies]

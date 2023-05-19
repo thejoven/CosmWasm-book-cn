@@ -1,319 +1,112 @@
-# Idea behind an Actor Model
+# Actor模型的理念
 
-The actor model is the solution to the problem of communication between smart
-contracts. Let's take a look at the reasons why this particular solution is
-chosen in CosmWasm, and what are the consequences of that.
+Actor模型是解决智能合约之间通信问题的方案。让我们来看看为什么CosmWasm选择了这种特定的解决方案以及其带来的后果。
 
-## The problem
+## 问题
 
-Smart contracts can be imagined as sandboxed microservices. Due to
-[SOLID](https://en.wikipedia.org/wiki/SOLID) principles, it is valuable to
-split responsibilities between entities. However, to split the work between
-contracts themselves, there is a need to communicate between them, so if one
-contract is responsible for managing group membership, it is possible to call
-its functionality from another contract.
+智能合约可以被想象为沙盒化的微服务。根据[SOLID](https://en.wikipedia.org/wiki/SOLID)原则，将责任分散在不同实体之间是有价值的。然而，为了在合约之间分配工作，需要进行通信。因此，如果一个合约负责管理组成员资格，可以从另一个合约调用其功能。
 
-The traditional way to solve this problem in SW engineering is to model
-services as functions that would be called with some RPC mechanism, and return
-its result as a response. Even though this approach looks nice, it creates sort
-of problems, in particular with shared state consistency.
+在软件工程中，解决这个问题的传统方法是将服务建模为可以通过某种RPC机制调用的函数，并将其结果作为响应返回。尽管这种方法看起来不错，但它会带来一些问题，特别是与共享状态一致性有关的问题。
 
-The other approach which is far more popular in business-level modeling is to
-treat entities as actors, which can perform some tasks, but without
-interrupting it with calls to other contracts. Any calls to other contracts can
-only be called after the whole execution is performed. When "subcall" is
-finished, it will call the original contract back.
+在业务级建模中，另一种更流行的方法是将实体视为能够执行某些任务但在调用其他合约时不中断的“actor”。对其他合约的任何调用只能在整个执行完成后进行。当“子调用”完成时，它会回调原始合约。
 
-This solution may feel unnatural, and it requires different kinds of design
-solutions, but it turns out to work pretty well for smart contract execution.
-I will try to explain how to reason about it, and how it maps to contract
-structure step by step.
+这种解决方案可能感觉不自然，并且需要不同类型的设计解决方案，但事实证明它非常适用于智能合约执行。我将尝试逐步解释如何进行推理，以及如何将其映射到合约结构。
 
-## The Actor
+## Actor角色
 
-The most important thing in the whole model is an Actor itself. So, what is
-this? The Actor is a single instantiation of a contract, which can perform
-several actions. When the actor finishes his job, he prepares a summary of it,
-which includes the list of things that have to be done, to complete the whole
-scheduled task.
+整个模型中最重要的是Actor角色本身。那么，它是什么呢？Actor是一个合约的单个实例，可以执行多个操作。当Actor完成工作时，它准备了一个总结，其中包括完成整个预定任务所需的事项列表。
 
-An example of an actor is the Seller in the KFC restaurant. The first thing you
-do is order your BSmart, so you are requesting action from him. So, from the
-system user, you can think about this task as "sell and prepare my meal", but
-the action performed by the seller is just "Charge payment and create order".
-The first part of this operation is to create a bill and charge you for it, and
-then it requests the Sandwich and Fries to be prepared by other actors,
-probably chefs. Then when the chef is done with his part of the meal, he checks
-if all meals are ready. If so, it calls the last actor, the waiter, to deliver
-the food to you. At this point, you can receive your delivery, and the task is
-considered complete.
+KFC餐厅中的销售员就是一个Actor的例子。首先，您会点餐（BSmart），因此您向销售员请求动作。从系统用户的角度来看，您可以将此任务视为“销售并准备我的餐点”，但销售员执行的动作只是“收取支付并创建订单”。此操作的第一部分是创建账单并向您收取费用，然后它会请求其他Actor（可能是厨师）准备三明治和薯条。然后，当厨师完成他的一部分工作时，他会检查所有餐点是否准备好。如果是这样，他会调用最后一个Actor，即服务员，将食物送到您那里。此时，您可以收到您的外卖，任务被视为已完成。
 
-The above-described workflow is kind of simplified. In particular - in a
-typical restaurant, a waiter would observe the kitchen instead of being
-triggered by a chef, but in the Actor model, it is not possible. Here, entities
-of the system are passive and cannot observe the environment actively - they
-only react to messages from other system participants. Also in KFC, the seller
-would not schedule subtasks for particular chefs; instead, he would leave tasks
-to be taken by them, when they are free. It is not the case, because as before -
-chefs cannot actively listen to the environment. However, it would be possible
-to create a contract for being a chef's dispatcher which would collect all
-orders from sellers, and balance them across chefs for some reason.
+上述描述的工作流程有些简化。特别是在一家典型的餐厅中，服务员会观察厨房，而不是由厨师触发，但在Actor模型中，这是不可能的。在这里，系统的实体是被动的，不能主动观察环境-它们只能对来自其他系统参与者的消息做出反应。同样在KFC，销售员不会为特定的厨师安排子任务；相反，他们会留下任务，等待厨师有空时接手。这并不是因为厨师不能主动听取环境的原因。但是，可以创建一个合约作为厨师的调度程序，从销售员那里收集所有订单，并在某种情况下将它们分配给厨师。
 
-## The Action
+## 动作
 
-Actors are the model entities, but to properly communicate with them, we need
-some kind of protocol. Every actor is capable of performing several actions. In
-my previous KFC example, the only action seller can do is "Charge payment and
-create order". However, it is not always the case - our chefs were proficient
-at performing both "Prepare fries" and "Prepare Sandwich" actions - and also
-many more.
+Actor是模型实体，但为了与它们进行适当的通信，我们需要一种协议。每个Actor都能执行多个动作。在我之前的KFC例子中，销售员唯一能做的动作是“收取支付并创建订单”。然而，并不总是这样-我们的厨师擅长执行“准备薯条”和“准备三明治”等许多动作。
 
-So, when we want to do something in an actor system, we schedule some action to
-the actor being the closest to us, very often with some additional parameters
-(as we can pick if we want to exchange fries with salad).
+因此，当我们想在Actor系统中做某事时，我们会将某个动作安排给离我们最近的Actor，通常还会带上一些附加参数（例如我们可以选择是否用沙拉替换薯条）。
 
-However, naming the action after the exact thing which happened in the very
-contract would be misleading. Take a look at the KFC example once again. As I
-mentioned, the action performed by a seller is "Charge payment and create
-order". The problem is, that for the client who schedules this action, it
-doesn't matter what exactly is the responsibility of the actor himself - what
-the client is scheduling is "Prepare Meal" with some description of what
-exactly to prepare. So, we can say, that the action is the thing performed by
-the contract itself, plus all the sub-actions it schedules.
+然而，将动作命名为与合约中发生的确切事情相同的事物会产生误导。再次看看KFC的例子。正如我之前提到的，销售员执行的动作是“收取支付并创建订单”。问题是，对于安排此动作的客户来说，演员本身的责任是什么并不重要-客户安排的是“准备餐点”，并附上一些具体的准备说明。因此，我们可以说，动作是合约本身执行的动作，以及它安排的所有子动作。
+## 多阶段动作
 
-## Multi-stage Actions
+整个想法有一定道理，但是在Actor模型中也带来了问题：如果我想在我的合约中执行某个动作，但要完全完成某些步骤，合约必须确保它安排的某些子动作已经完成，怎么办呢？
 
-So as the whole idea makes some sense, there is the problem created by the
-actor model: what if I want to perform some action in my contract, but to
-completely finalize some steps, the contract has to make sure that some
-sub-action he scheduled are finished?
+想象一下，在之前的KFC情景中，没有专门的服务员。相反，当厨师完成他们的工作时，销售员为您提供餐点。
 
-Imagine that in the previous KFC situation, there is no dedicated Waiter.
-Instead the Seller was serving you a meal when the Chefs finished their job.
+这种模式非常重要和常见，以至于在CosmWasm中，我们开发了一种特殊的处理方式，即专用的`Reply`动作。
 
-This kind of pattern is so important and common that in CosmWasm, we developed
-a special way to handle it, which is dedicated `Reply` action.
+当销售员为厨师安排动作时，他给该动作分配一个数字（比如订单号），并将其传递给厨师。他还记住了他为每个订单号安排了多少个动作。现在，每当厨师完成他的动作时，他会在销售员身上调用特殊的`Reply`动作，其中他会传回订单号。然后，销售员会减少此订单剩余的动作数量，如果达到零，他会上菜。
 
-So when Seller is scheduling actions for chefs, he assigns some number to this
-action (like order id) and passes it to chefs. He also remembers how many
-actions he scheduled for every order id. Now every time chef is finished with
-his action; he would call the special `Reply` action on Seller, in which he
-would pass back the order id. Then, Seller would decrease the number of actions
-left for this order, and if it reached zero, he would serve a meal.
+现在你可以说，`Reply`动作完全没有必要，因为厨师可以在销售员身上安排任何任意的动作，比如`Serve`，为什么需要特殊的`Reply`呢？原因是抽象和可重用性。厨师的任务是准备餐点，仅此而已。他没有理由知道自己为什么要准备薯条-它是更大任务的一部分（比如为客户下订单），还是销售员自己饿了。可能不仅销售员有资格叫厨师做餐点-任何餐厅员工都可以只为自己做这样的调用。因此，我们需要一种能够以某种通用方式对演员完成工作作出反应的方式，以便在任何情况下正确处理这种情况。
 
-Now you can say, that the `Reply` action is completely not needed, as Chefs
-could just schedule any arbitrary action on Seller, like `Serve`, why is there
-the special `Reply` for? The reason is abstraction and reusability. The Chefs
-task is to prepare a meal, and that is all. There is no reason for him to know
-why he is even preparing Fries - if it is part of the bigger task (like order
-for a client), or the seller is just hungry. It is possible that not only the
-seller is eligible to call the chef for food - possibly any restaurant employee
-can do that just for themselves. Therefore, we need a way to be able to react
-to an actor finishing his job in some universal way, to handle this situation
-properly in any context.
+值得注意的是，`Reply`可以包含一些附加数据。之前分配的ID是`Reply`调用中唯一需要的信息，但演员可以传递一些附加数据-发出的`events`，这些大多是元数据（主要供非区块链应用程序观察），以及任何它想要传递的任意数据。
+## 状态
 
-It is worth noting that the `Reply` can contain some additional data. The id
-assigned previously is the only required information in the `Reply` call, but
-the actor can pass some additional data - `events` emitted, which are mostly
-metadata (to be observed by non-blockchain applications mostly), and any
-arbitrary data it wants to pass.
+到目前为止，我们将Actor视为执行某些工作的实体，比如准备餐点。如果我们考虑计算机程序，这样的工作可能是在屏幕上显示某些内容，或者打印一些东西。但智能合约并非如此。智能合约唯一能够影响的是它们的内部状态。因此，状态是合约保存的任意数据。在我之前提到的KFC的例子中，销售员记住了他为厨师安排的尚未完成的动作数量-这个数字是销售员的状态的一部分。
 
-## State
+为了给出一个更现实的合约状态的例子，让我们考虑一个比餐厅更贴近现实生活的智能合约。假设我们想要创建自己的货币-也许我们想要为某个MMORPG游戏创建基于智能合约的市场。因此，我们需要某种方式能够至少在玩家之间转移货币。我们可以通过创建一个名为`MmoCurrency`的合约来实现这一点，该合约支持`Transfer`动作以将货币转移到其他玩家。那么这样的合约状态是什么呢？它只是一个将玩家名称映射到其所拥有的货币数量的表。我们刚刚提到的合约在CosmWasm示例中是存在的，称为[`cw20-base`
+合约](https://github.com/CosmWasm/cw-plus/tree/main/contracts/cw20-base)
+（它有些复杂，但这是其核心思想）。
 
-Up until this point, we were considering actors as entities performing some
-job, like preparing the meal. If we are considering computer programs, such a
-job would be to show something on the screen, maybe print something. This is
-not the case with Smart Contracts. The only thing which can be affected by the
-Smart Contract is their internal state. So, the state is arbitrary data that is
-kept by the contract. Previously in the KFC example I mentioned, the Seller is
-keeping in mind how many actions he scheduled for chefs are not yet finished -
-this number is part of the Seller's state.
+现在有一个问题-如果我无法检查我拥有多少货币，那么如何进行货币转移？这是一个非常好的问题，答案很简单-我们系统中每个合约的整个状态都是公开的。这并非适用于每个Actor模型，但在CosmWasm中，这就是它的工作方式，并且在某种程度上是由区块链的性质所强制的。在区块链上发生的一切都必须是公开的，如果某些信息应该被隐藏，它必须以间接的方式存储。
 
-To give a more realistic example of a contract state, let's think about a more
-real-life Smart Contract than the restaurant. Let's imagine we want to create
-our currency - maybe we want to create some smart contracts-based market for
-some MMORPG game. So, we need some way to be able to at least transfer currency
-between players. We can do that, by creating the contract we would call
-`MmoCurrency`, which would support the `Transfer` action to transfer money to
-another player. Then what would be the state of such a contract? It would be
-just a table mapping player names to the amount of currency they own. The
-contract we just invited exists in CosmWasm examples, and it is called the
-[`cw20-base`
-contract](https://github.com/CosmWasm/cw-plus/tree/main/contracts/cw20-base)
-(it is a bit more complicated, but it is its core idea).
+关于CosmWasm中的状态有一点非常重要，那就是状态是事务性的。对状态的任何更新都不会立即生效，只有当整个操作成功时才会应用。这非常重要，因为它确保如果合约出现问题，它始终保持在某种适当的状态。让我们考虑一下我们的`MmoCurrency`情况。想象一下，在`Transfer`动作中，我们首先增加接收者的货币数量（通过更新状态），然后 再减少发送者的数量。然而，在减少之前，我们需要检查发送者是否拥有足够的资金来执行交易。如果我们发现无法执行交易，我们不需要手动进行回滚-我们只需从操作执行中返回一个失败，并且状态不会被更新。因此，当合约状态被更新时，它只是对此状态的局部副本进行修改，而部分更改对其他合约永远不可见。
 
-And now there is a question - how is this helpful to transfer currency if I
-cannot check how much of it do I own? It is a very good question, and the
-answer to that is simple - the whole state of every contract in our system is
-public. It is not universal for every Actor model, but it is how it works in
-CosmWasm, and it is kind of forced by the nature of blockchain. Everything
-happening in blockchain has to be public, and if some information should be
-hidden, it has to be stored indirectly.
+## 查询
 
-There is one very important thing about the state in CosmWasm, and it is the
-state being transactional. Any updates to the state are not applied
-immediately, but only when the whole action succeeds. It is very important, as
-it guarantees that if something goes wrong in the contract, it is always left
-in some proper state. Let's consider our `MmoCurrency` case. Imagine, that in
-the `Transfer` action we first increase the receiver currency amount (by
-updating the state), and only then do we decrease the sender amount. However,
-before decreasing it, we need to check if a sender possesses enough funds to
-perform the transaction. In case we realize that we cannot do it, we don't need
-to do any rolling back by hand - we would just return a failure from the action
-execution, and the state would not be updated. So, when in the contract state
-is updated, it is just a local copy of this state being altered, but the
-partial changes would never be visible by other contracts.
+在CosmWasm对Actor模型的方法中，还有一个构建块我还没有涵盖到。正如我所说，每个合约的整个状态都是公开的，任何人都可以查看。问题是，这种查看状态的方式并不是非常方便-它要求合约的用户了解其内部结构，这在某种程度上违反了SOLID规则（特别是里氏替换原则）。例如，如果一个合约被更新，其状态结构稍作改变，那么查看其状态的另一个合约将永远无法正常工作。此外，合约状态通常是简化的，并且与观察者相关的信息将从状态中计算得出。
 
-## Queries
+这就是查询发挥作用的地方。查询是发送给合约的一种消息类型，它不执行任何动作，因此不更新任何状态，但可以立即返回答案。
 
-There is one building block in the CosmWasm approach to the Actor model, which
-I haven't yet cover. As I said, the whole state of every contract is public and
-available for everyone to look at. The problem is that this way of looking at
-state is not very convenient - it requires users of contracts to know its
-internal structure, which kind of violates the SOLID rules (Liskov substitution
-principle in particular). If, for example a contract is updated and its state
-structure changes a bit, another contract looking at its state would just
-nevermore work. Also, it is often the case, that the contract state is kind of
-simplified, and information that is relevant to the observer would be
-calculated from the state.
+在我们的KFC比喻中，查询可以是销售员去问厨师：“我们的芝士汉堡还有酸黄瓜吗？”这可以在运营过程中完成，并且响应可以在其中使用。这是可能的，因为查询永远不会更新其状态，因此它们不需要以事务方式处理。
 
-This is where queries come into play. Queries are the type of messages to
-contract, which does not perform any actions, so do not update any state, but
-can return an answer immediately.
+然而，查询的存在并不意味着我们不能直接查看合约的状态-状态仍然是公开的，直接查看它们的技术被称为“原始查询”（Raw Queries）。为了清楚起见，非原始查询有时被称为“智能查询”（Smart Queries）。
+## 将所有内容综合起来-事务性调用流程
 
-In our KFC comparison, the query would be if Seller goes to Chef to ask "Do we
-still have pickles available for our cheeseburgers"? It can be done while
-operating, and response can be used in it. It is possible because queries can
-never update their state, so they do not need to be handled in a transactional
-manner.
+因此，我们在这里涉及了许多内容，我知道这可能有些令人困惑。因此，我想通过对CosmWasm合约进行一些更复杂的调用来形象地说明“事务性状态”意味着什么。
 
-However, the existence of queries doesn't mean that we cannot look at the
-contract's state directly - the state is still public, and the technique of
-looking at them directly is called `Raw Queries`. For clarity, non-raw queries
-are sometimes denoted as `Smart Queries`.
+让我们想象两个合约：
 
-## Wrapping everything together - transactional call flow
+1. 之前提到的`MmoCurrency`合约，它可以执行`Transfer`动作，允许将某个`amount`的货币转移到某个`receiver`。
+2. `WarriorNpc`合约，它会拥有一些我们的货币数量，并且会被我们的MMO引擎用于支付玩家完成某个任务的奖励。它将由`Payout`动作触发，只能由特定的客户（即我们的游戏引擎）调用。
 
-So, we touched on many things here, and I know it may be kind of confusing.
-Because of that, I would like to go through some more complicated calls to the
-CosmWasm contract to visualize what the "transactional state" means.
+现在有一件有趣的事情-这个模型迫使我们在经济方面使我们的MMO更加现实，这是我们通常看到的情况-因为`WarriorNpc`拥有一些货币，而且无法通过任何方式创造更多。这并非总是如此（之前提到的`cw20`在这种情况下具有铸币的概念），但为了简单起见，让我们假设这是我们想要的情况。
+为了使任务持续更长时间，我们会制定一个奖励，使其始终介于`1 mmo`和`100 mmo`之间，但最理想的情况是战士拥有的货币的`15%`。这意味着随着每位后续玩家的加入，任务奖励会减少，直到战士身无分文，一无所有，无法再支付玩家。
 
-Let's imagine two contracts:
+那么，流程会是什么样的？第一个游戏将向`WarriorNpc`合约发送一个`Payout`消息，其中包含应该获得奖励的玩家的信息。战士将跟踪完成任务的玩家，以避免重复支付给同一个人-在他的状态中会有一个玩家列表。首先，他会检查列表以查找需要支付的玩家-如果他在列表中，他将以错误结束交易。
 
-1. The `MmoCurrency` contract mentioned before, which can perform the
-   `Transfer` action, allows transferring some `amount` of currency to some
-   `receiver`.
-2. The `WarriorNpc` contract, which would have some amount of our currency, and
-   he would be used by our MMO engine to pay the reward out for some quest
-   player could perform. It would be triggered by `Payout` action, which can be
-   called only by a specific client (which would be our game engine).
+然而，在大多数情况下，玩家不会出现在列表中-然后`WarriorNpc`会将其添加到列表中。现在，战士完成了他的任务，并安排了由`MmoCurrency`执行的`Transfer`动作。
 
-Now here is an interesting thing - this model forces us to make our MMO more
-realistic in terms of the economy that we traditionally see - it is because
-`WarriorNpc` has some amount of currency, and cannot create more out of
-anything. It is not always the case (the previously mentioned `cw20` has a
-notion of Minting for this case), but for the sake of simplicity let's assume this
-is what we want.
+但是有一个重要的事情-因为`Transfer`动作实际上是更大的`Payout`流程的一部分，它不会在原始的区块链状态上执行，而是在本地副本上执行，该副本已经应用了玩家列表。因此，如果`MmoCurrency`以任何原因查看`WarriorNpc`的内部列表，它将已经是更新过的。
 
-To make the quest reasonable for longer, we would make a reward for it to be
-always between `1 mmo` and `100 mmo`, but it would be ideally `15%` of what
-Warrior owns. This means that the quest reward decreases for every subsequent
-player, until Warrior would be broke, left with nothing, and will no longer be
-able to payout players.
+现在，`MmoCurrency`正在执行其工作，更新战士和玩家的余额状态（请注意，我们在这里将我们的战士视为另一个玩家！）。当它完成时，可能会发生两件事：
 
-So, what would the flow look like? The first game would send a `Payout` message
-to the `WarriorNpc` contract, with info on who should get the reward. Warrior
-would keep track of players who fulfilled the quest, to not pay out the same
-person twice - there would be a list of players in his state. First, he would
-check the list looking for players to pay out - if he is there, he will finish
-the transaction with an error.
+1. 发生错误-可能战士的现金不足，无法再支付任务费用。在这种情况下，对于原始的区块链存储，不会应用任何更改-无论是更新成功玩家列表，还是余额更改。它们就像从未发生过一样。在数据库世界中，这被称为事务回滚。
+2. 操作成功-所有对状态的更改现在都已应用到区块链上，任何对`MmoCurrency`或`WarriorNpc`的进一步观察都将看到更新后的数据。
 
-However, in most cases the player would not be on the list - so then
-`WarriorNpc` would add him to the list. Now the Warrior would finish his part
-of the task, and schedule the `Transfer` action to be performed by
-`MmoCurrency`.
+存在一个问题-在这个模型中，我们的列表不是完成任务的玩家列表（正如我们希望的那样），而是支付奖励的玩家列表（因为在转账失败时，列表不会更新）。我们可以改进。
 
-But there is the important thing - because `Transfer` action is actually part
-of the bigger `Payout` flow, it would not be executed on the original
-blockchain state, but on the local copy of it, to which the player's list is
-already applied to. So if the `MmoCurrency` would for any reason takes a look
-at `WarriorNpc` internal list, it would be already updated.
+## 处理响应的不同方式
 
-Now `MmoCurrency` is doing its job, updating the state of Warrior and player
-balance (note, that our Warrior is here just treated as another player!). When
-it finishes, two things may happen:
+请注意，我们根本没有提到`Reply`操作。那么为什么`MmoCurrency`没有在`WarriorNpc`上调用它呢？原因是这个操作是可选的。在将子动作安排在另一个合约上时，我们可以选择何时调用`Reply`以及如何处理结果：
 
-1. There was an error - possibly Warrior is out of cash, and it can nevermore
-   pay for the task. In such case, none of the changes - neither updating the
-   list of players succeeding, nor balance changes are not applied to the
-   original blockchain storage, so they are like they never happened. In the
-   database world, it is denoted as rolling back the transaction.
-2. Operation succeed - all changes on the state are now applied to the
-   blockchain, and any further observation of `MmoCurrency` or `WarriorNpc` by
-   the external world would see updated data.
+1. 从不调用`Reply`，如果子消息失败，则动作失败。
+2. 成功时调用`Reply`。
+3. 失败时调用`Reply`。
+4. 始终调用`Reply`。
 
-There is one problem - in this model, our list is not a list of players who
-fulfilled the quest (as we wanted it to be), but the list of players who paid
-out (as in transfer failure, the list is not updated). We can do better.
+因此，如果我们不要求后续合约调用`Reply`，那么它就不会发生。在这种情况下，如果子调用失败，整个事务将被回滚-子消息的失败会传递导致原始消息失败。现在可能有点复杂，但我保证，如果你能多练习一下，它会变得简单起来。
 
-## Different ways of handling responses
+在处理回复时，重要的是要记住，尽管更改尚未应用到区块链上（事务仍然可能失败），但回复处理程序已经在具有所有子消息迄今为止应用的更改的状态副本上运行。在大多数情况下，这是一件好事，但它有一个棘手的结果-如果合约递归地调用自身，那么后续的调用可能会覆盖原始消息中设置的内容。这种情况很少发生，但在某些情况下可能需要特殊处理-现在我不想深入讨论细节，但我希望你记住在演员的流程中对状态有什么样的期望。
 
-Note that we didn't mention a `Reply` operation at all. So why was it not
-called by `MmoCurrency` on `WarriorNpc`? The reason is that this operation is
-optional. When scheduling sub-actions on another contract we may choose when
-`Reply` how the result should be handled:
+现在让我们来看看如何处理`2`-`4`选项的结果。有趣的是，即使使用`2`，即使子调用成功执行了事务，我们仍然可以查看它通过`Reply`返回的数据以及它完成后的最终状态，并且我们仍然可以决定将整个操作视为失败，这种情况下一切都会被回滚-甚至是由外部合约执行的货币转移。
 
-1. Never call `Reply`, action fails if sub-message fails
-2. Call `Reply` on success
-3. Call `Reply` on failure
-4. Always call `Reply`
+在我们的例子中，一个有趣的选项是`3`。因此，如果合约在失败时调用了`Reply`，我们可以决定宣称成功，并在子调用失败的情况下提交状态事务。为什么这对我们可能是相关的呢？可能是因为我们的内部列表应该保持完成任务的玩家列表，而不是支付奖励的玩家列表！因此，如果我们没有更多的货币，我们仍然希望更新列表！
 
-So, if we do not request `Reply` to be called by subsequent contract, it will
-not happen. In such a case if a sub-call fails, the whole transaction is rolled
-back - sub-message failure transitively causes the original message failure. It
-is probably a bit complicated for now, but I promise it would be simple if you
-would did some practice with that.
+使用回复的最常见方式（特别是选项`2`）是实例化另一个由被调用的合约管理的合约。这种用例的思路是，创建者合约希望将创建的合约地址保留在其状态中。为了做到这一点，它必须创建一个`Instantiate`子消息，并订阅其成功响应，其中包含新创建的合约的地址。
 
-When handling the reply, it is important to remember, that although changes are
-not yet applied to the blockchain (the transaction still can be failed), the
-reply handler is already working on the copy of the state with all changes made
-by sub-message so far applied. In most cases, it would be a good thing, but it
-has a tricky consequence - if the contract is calling itself recursively, it is
-possible that subsequent call overwrote things set up in the original message.
-It rarely happens, but may need special treatment in some cases - for now I
-don't want to go deeply into details, but I want you to remember about what to
-expect after state in the actor's flow.
+最后，你可以看到在CosmWasm中执行操作是通过分层状态变更事务来构建的。只有当所有事务都成功时，子事务才能应用到区块链上，但如果子事务失败，只有它的部分会被回滚，而其他更改可能会被应用。这与大多数数据库系统的工作方式非常相似。
 
-Now let's take a look at handling results with `2`-`4` options. It is actually
-interesting, that using `2`, even if the transaction is performed by sub-call
-succeed, we may now take a look at the data it returned with `Reply`, and on
-its final state after it finished, and we can still decide, that act as a
-whole is a failure, in which case everything would be rolled back - even
-currency transfer performed by external contract.
+## 结论
 
-In our case, an interesting option is `3`. So, if the contract would call
-`Reply` on failure, we can decide to claim success, and commit a transaction on
-the state if the sub call failed. Why may it be relevant for us? Possibly
-because our internal list was supposed to keep the list of players succeeding
-with the quest, not paid out! So, if we have no more currency, we still want to
-update the list!
-
-The most common way to use the replies (option `2` in particular)  is to
-instantiate another contract, managed by the one called. The idea is that in
-those use cases, the creator contract wants to keep the address of the created
-contract in its state. To do so it has to create an `Instantiate` sub-message,
-and subscribe for its success response, which contains the address of the freshly
-created contract.
-
-In the end, you can see that performing actions in CosmWasm is built with
-hierarchical state change transactions. The sub-transaction can be applied to
-the blockchain only if everything succeeds, but in case that sub-transaction
-failed, only its part may be rolled back, end other changes may be applied. It
-is very similar to how most database systems work.
-
-## Conclusion
-
-Now you have seen the power of the actor model to avoid reentrancy, properly
-handle errors, and safely sandbox contracts. This helps us provide the solid
-security guarantees of the CosmWasm platform. Let’s get started playing around
-with real contracts in the `wasmd` blockchain.
+现在，你已经看到了使用Actor模型来避免重入、正确处理错误并安全地隔离合约的强大之处。这有助于我们提供CosmWasm平台的可靠安全保证。现在，让我们开始在`wasmd`区块链上玩弄真实的合约吧。

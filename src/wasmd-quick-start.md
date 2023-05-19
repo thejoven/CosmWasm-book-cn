@@ -1,6 +1,3 @@
-# Quick start with `wasmd`
+# 使用`wasmd`快速入门
 
-This section is a quick guide on working with `wasmd` to test your smart contracts on the actual
-blockchain. Note that this whole section is entirely optional - if you want to develop contracts
-and test them with the UT environment, feel free to skip it.
-
+本节是一个快速指南，介绍如何使用`wasmd`在实际区块链上测试您的智能合约。请注意，整个本节完全可选-如果您想开发合约并在UT环境中进行测试，可以跳过本节。

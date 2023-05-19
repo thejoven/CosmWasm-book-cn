@@ -1,15 +1,12 @@
-# Fixing admin contract
+# 修复管理员合约
 
-Now that we know what we want to achieve, we can start by aligning the
-contract we already have to become an admin contract. It is primarily
-fine at this point, but we want to do a cleanup.
+现在我们知道了我们想要实现的目标，我们可以开始对已有的合约进行调整，使其成为管理员合约。目前它基本上还可以，但我们想要进行一些清理。
 
-## Cleaning up queries
+## 清理查询
 
-The first thing to do is to get rid of the `Greet` query - it was good as a
-starter query example, but it has no practical purpose and only generates noise.
+首先要做的是删除`Greet`查询-它作为一个起始查询示例很好，但没有实际用途，只会产生噪音。
 
-We want to remove the unnecessary variant from the query enum:
+我们想要从查询枚举中删除不必要的变体：
 
 ```rust
 # use cosmwasm_schema::{cw_serde, QueryResponses};
@@ -40,7 +37,7 @@ pub enum QueryMsg {
 }
 ```
 
-Then we also remove the invalid path in the query dispatcher:
+然后我们还会在查询调度程序中删除无效路径：
 
 ```rust
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
@@ -51,25 +48,13 @@ pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     }
 }
 ```
+最后，我们从`contract::query`模块中移除了不相关的处理程序。我们还需要确保所有对它的引用都消失了（例如，如果在测试中有任何引用）。
 
-Finally, we remove the irrelevant handler from the `contract::query` module.
-We also need to make sure all references to it are gone (eg. if there are any
-in the tests).
+## 生成库文件输出
 
-## Generating the library output
+在本书的开头，我们将`Cargo.toml`中的`crate-type`设置为`"cdylib"`。这是为了生成wasm输出所必需的，但它有一个缺点-动态库不能用作其他crate的依赖项。在此之前，这不是一个问题，但在实践中，我们经常希望将合约依赖于其他合约，以便获得对它们的某些类型的访问权限-例如，定义的消息。
 
-At the very beginning of the book, we set the `crate-type` in `Cargo.toml` as
-`"cdylib"`. It was required to generate the wasm output, but it comes with a
-drawback - the dynamic libraries, as this cannot be used as dependencies in
-other crates. It was not a problem before, but in practice we often want to
-depend contract on others to get access to some types of them - for example,
-defined messages.
-
-Good for us. It is easy to fix. You might notice that the `crate-type` is an array,
-not a single string. The reason for that is that our project can emit several
-targets - in particular, we can add there the default `"rlib"` crate type to
-make it generate a "rust library" output - which is what we need to use as a
-dependency. Let's update our `Cargo.toml`:
+对我们来说，修复这个问题很容易。您可能会注意到`crate-type`是一个数组，而不是一个单独的字符串。这是因为我们的项目可以生成多个目标-特别是，我们可以在其中添加默认的`"rlib"`crate类型，以生成“rust库”输出-这正是我们需要作为依赖项使用的。让我们更新我们的`Cargo.toml`文件：
 
 ```toml
 [package]
@@ -95,50 +80,30 @@ crate-type = ["cdylib", "rlib"]
 # [dev-dependencies]
 # cw-multi-test = "0.15.1"
 ```
+此外，请注意我更改了合约的名称 - "contract"不太具有描述性，所以我将其更新为"admin"。
 
-Also, note I changed the contract name - "contract" is not very descriptive, so
-I updated it to "admin".
+## 项目结构
 
-## Project structure
+最后但并非最不重要的是 - 我们希望更好地组织我们的项目结构。到目前为止，我们只有一个合约，所以我们将其作为整个项目来处理。现在我们希望有一个反映我们创建的合约之间关系的目录树。
 
-Last but not least - we want to better structure our project. So far, we have
-only one contract, so we just worked on it as a whole project. Now we want some
-directory tree that reflects relations between contracts we create.
+首先，在项目中创建一个目录。然后我们想在其中创建一个名为"contracts"的子目录。从Rust的角度来看，这在技术上并不是必需的，但在我们的环境中有一些工具（例如工作区优化器），它们会假设它是应该查找合约的位置。这是您在CosmWasm合约存储库中常见的模式。
 
-First, create a directory for the project. Then we want to create a "contracts"
-subdirectory in it. It is not technically required from Rust's POV, but there
-are tools in our environment, like the workspace optimizer, which would assume
-it is where it should look for a contract. It is a common pattern you will see
-in CosmWasm contracts repos.
+然后，我们将上一章中的整个项目目录复制到"contracts"目录中，并将其重命名为"admin"。
 
-Then we copy the whole project directory from the previous chapter into the
-`contracts`, renaming it to `admin`.
-
-Finally, we want to couple all our projects (for now, it is just one, but we know
-there will be more there). To do so, we create the workspace-level `Cargo.toml`
-file in the top-level project directory:
+最后，我们希望将所有项目（目前只有一个，但我们知道以后会有更多）耦合在一起。为此，在顶层项目目录中创建工作区级别的`Cargo.toml`文件：
 
 ```toml
 [workspace]
 members = ["contracts/*"]
 resolver = "2"
 ```
+这个`Cargo.toml`与典型的项目级`Cargo.toml`略有不同 - 它定义了工作区。这里最重要的字段是`members` - 它定义了作为工作区一部分的项目。
 
-This `Cargo.toml` differs slightly from the typical project-level one - it
-defines the workspace. The most important field here is the `members` - it
-defines projects being part of the workspace.
+另一个字段是`resolver`。记住要添加它 - 它指示Cargo使用依赖解析器的第2版。自Rust 2021以来，这已经是非工作区的默认设置，但由于兼容性原因，默认设置无法更改为工作区 - 但建议在每个新创建的工作区中添加它。
 
-The other field is the `resolver`. It is something to remember to add - it
-instructs cargo to use version 2 of the dependency resolver. This has been the
-default for non-workspaces since Rust 2021, but because of compatibility reasons,
-the default couldn't be changed for workspaces - but it is advised to add it to
-every single newly created workspace.
+最后一个可能对工作区有用的字段是`exclude` - 它允许在工作区目录树中创建不属于该工作区的项目 - 我们不会使用它，但了解它是很好的。
 
-The last field which might be useful for workspaces is exclude - it allows to
-create projects in the workspace directory tree, which is not a part of this
-workspace - we will not use it, but it is good to know about it.
-
-Now just for clarity, let's see the top-level directory structure:
+现在只是为了清晰起见，让我们来看看顶层目录结构：
 
 ```none
 .
@@ -151,7 +116,4 @@ Now just for clarity, let's see the top-level directory structure:
    └── debug
 ```
 
-You can see the target directory and `Cargo.lock` files existing in the tree - it is
-because I already built and ran tests for the `admin` contract - in Rust workspaces,
-`cargo`` knows to build everything in the top level, even if it would be built from
-the inner directory.
+你可以看到目录树中存在目标目录和`Cargo.lock`文件 - 这是因为我已经为`admin`合约构建并运行了测试 - 在Rust工作区中，`cargo`知道要在顶层构建所有内容，即使是从内部目录构建也是如此。

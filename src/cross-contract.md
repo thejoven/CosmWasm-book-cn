@@ -1,16 +1,9 @@
-# Cross contract communication
+# 跨合约通信
 
-We already covered creating a single isolating contract. However, SOLID principles tell us that
-entities should be as small as reasonably possible - such as they have a
-[single responsibility](https://en.wikipedia.org/wiki/Single-responsibility_principle). Entities
-we are focusing on now are smart contracts, and we want to make sure that every smart contract has
-a sole responsibility it takes care of.
+我们已经介绍了如何创建一个单一隔离的合约。然而，SOLID 原则告诉我们，实体应该尽可能小，即具有[单一责任](https://en.wikipedia.org/wiki/Single-responsibility_principle)。我们现在关注的实体是智能合约，我们希望确保每个智能合约都有它负责的唯一责任。
 
-But we also want to build complex systems using smart contracts. To do so, we need to be able to
-communicate between them. We already talked about what such communication looks like using an actor
-model. Now it's time to use this knowledge in practice.
+但是我们也希望使用智能合约构建复杂系统。为了做到这一点，我们需要能够在它们之间进行通信。我们已经讨论了使用 Actor 模型进行通信的方式。现在是时候将这些知识应用于实践了。
 
-In this chapter, we will improve the previously created administration group model to solve the problem
-I brought - the possibility of adding own multiple addresses by a single admin to take bigger donation parts.
+在本章中，我们将改进之前创建的管理组模型，以解决我提出的问题 - 单个管理员可以添加自己的多个地址以获取更大的捐赠份额。
 
-We would also give admins some work to do besides being admins.
+此外，我们还将给管理员一些工作以外的任务。
