@@ -4989,20 +4989,10 @@ pub fn leave(deps: DepsMut, info: MessageInfo) -&gt; StdResult&lt;Response&gt; {
 </span>   Ok(resp)
 }
 <span class="boring">}</span></code></pre></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="working-with-time"><a class="header" href="#working-with-time">Working with time</a></h1>
-<p>The concept of time in the blockchain is tricky - as in
-every distributed system, it is not easy to synchronize the
-clocks of all the nodes.</p>
-<p>However, there is the notion of a time that is even
-monotonic - which means that it should never go &quot;backward&quot;
-between executions. Also, what is important is - time is
-always unique throughout the whole transaction - and even
-the entire block, which is built of multiple transactions.</p>
-<p>The time is encoded in the
-<a href="https://docs.rs/cosmwasm-std/1.2.4/cosmwasm_std/struct.Env.html"><code>Env</code></a>
-type in its
-<a href="https://docs.rs/cosmwasm-std/1.2.4/cosmwasm_std/struct.BlockInfo.html"><code>block</code></a>
-field, which looks like this:</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="使用时间"><a class="header" href="#使用时间">使用时间</a></h1>
+<p>在区块链中，时间的概念是棘手的 - 就像在任何分布式系统中一样，很难同步所有节点的时钟。</p>
+<p>然而，有一种时间概念是单调的 - 这意味着它在执行之间不应该倒退。此外，重要的是，时间在整个交易过程中始终是唯一的 - 甚至在由多个交易组成的整个区块中也是如此。</p>
+<p>时间被编码在 <a href="https://docs.rs/cosmwasm-std/1.2.4/cosmwasm_std/struct.Env.html"><code>Env</code></a> 类型的 <a href="https://docs.rs/cosmwasm-std/1.2.4/cosmwasm_std/struct.BlockInfo.html"><code>block</code></a> 字段中，其结构如下所示：</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub struct BlockInfo {
@@ -5011,34 +5001,17 @@ field, which looks like this:</p>
     pub chain_id: String,
 }
 <span class="boring">}</span></code></pre></pre>
-<p>You can see the <code>time</code> field, which is the timestamp of the
-processed block. The <code>height</code> field is also worth
-mentioning - it contains a sequence number of the processed
-block. It is sometimes more useful than time, as it is
-guaranteed that the <code>height</code> field is guaranteed to increase
-between blocks, while two blocks may be executed with the
-same <code>time</code> (even though it is rather not probable).</p>
-<p>Also, many transactions might be executed in a single block.
-That means that if we need a unique id for the execution of
-a particular message, we should look for something more.
-This thing is a
-<a href="https://docs.rs/cosmwasm-std/1.2.4/cosmwasm_std/struct.TransactionInfo.html"><code>transaction</code></a>
-field of the <code>Env</code> type:</p>
+<p>您可以看到<code>time</code>字段，它是处理的区块的时间戳。还值得一提的是<code>height</code>字段，它包含了已处理区块的序列号。在某些情况下，它比时间更有用，因为可以保证<code>height</code>字段在区块之间递增，而两个区块可能在相同的时间执行（尽管这种情况相对较少）。</p>
+<p>此外，一个区块中可能会执行许多交易。这意味着如果我们需要一个特定消息执行的唯一标识符，我们应该寻找其他方式。这个东西就是<code>Env</code>类型的<a href="https://docs.rs/cosmwasm-std/1.2.4/cosmwasm_std/struct.TransactionInfo.html"><code>transaction</code></a>字段：</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub struct TransactionInfo {
     pub index: u32,
 }
 <span class="boring">}</span></code></pre></pre>
-<p>The <code>index</code> here contains a unique index of the transaction
-in the block. That means that to get the unique identifier
-of a transaction through the whole block, we can use the
-<code>(height, transaction_index)</code> pair.</p>
-<h2 id="join-time"><a class="header" href="#join-time">Join time</a></h2>
-<p>We want to use the time in our system to keep track of the
-join time of admins. We don't yet add new members to the
-group, but we can already set the join time of initial
-admins. Let's start updating our state:</p>
+<p>在这里，<code>index</code>包含了区块中交易的唯一索引。这意味着要获得整个区块中交易的唯一标识符，我们可以使用<code>(height, transaction_index)</code>的组合。</p>
+<h2 id="加入时间"><a class="header" href="#加入时间">加入时间</a></h2>
+<p>我们希望在我们的系统中使用时间来跟踪管理员的加入时间。虽然我们还没有向群组添加新成员，但我们已经可以设置初始管理员的加入时间。让我们开始更新我们的状态：</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use cosmwasm_std::{Addr, Timestamp};
@@ -5048,17 +5021,10 @@ use cw_storage_plus::Map;
 pub const ADMINS: Map&lt;&amp;Addr, Timestamp&gt; = Map::new(&quot;admins&quot;);
 <span class="boring">pub const DONATION_DENOM: Item&lt;String&gt; = Item::new(&quot;donation_denom&quot;);
 </span><span class="boring">}</span></code></pre></pre>
-<p>As you can see, our admins set became a proper map - we will
-assign the join time to every admin.</p>
-<p>Now we need to update how we initialize a map - we stored the Empty data previously, but it nevermore matches our value type. Let's check an updated instantiation function:</p>
-<p>You might argue to create a separate structure for the value
-of this map, so in the future, if we would need to add
-something there, but in my opinion, it would be premature -
-we can also change the entire value type in the future, as
-it would be the same breaking change.</p>
-<p>Now we need to update how we initialize a map - we stored
-the <code>Empty</code> data previously, but it nevermore matches our
-value type. Let's check an updated instantiation function:</p>
+<p>正如您所见，我们的管理员集合变成了一个合适的映射（Map） - 我们将为每个管理员分配加入时间。</p>
+<p>现在我们需要更新如何初始化映射 - 之前我们存储了<code>Empty</code>数据，但它不再匹配我们的值类型。让我们来看看更新后的实例化函数：</p>
+<p>您可能会提出为该映射的值创建一个单独的结构，以便将来如果需要添加其他内容，但在我看来，这可能过早 - 我们以后还可以更改整个值类型，因为这将是一个破坏性的改变。</p>
+<p>现在我们需要更新如何初始化映射 - 之前我们存储了<code>Empty</code>数据，但它不再匹配我们的值类型。让我们来看看更新后的实例化函数：</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use crate::state::{ADMINS, DONATION_DENOM};
@@ -5081,25 +5047,16 @@ pub fn instantiate(
     Ok(Response::new())
 }
 <span class="boring">}</span></code></pre></pre>
-<p>Instead of storing <code>&amp;Empty {}</code> as an admin value, we store
-the join time, which we read from <code>&amp;env.block.time</code>. Also,
-note that I removed the underscore from the name of the
-<code>env</code> block - it was there only to ensure the Rust compiler
-the variable is purposely unused and not some kind of a bug.</p>
-<p>Finally, remember to remove any obsolete <code>Empty</code> imports
-through the project - the compiler should help you point out
-unused imports.</p>
-<h2 id="query-and-tests"><a class="header" href="#query-and-tests">Query and tests</a></h2>
-<p>The last thing to add regarding join time is the new query
-asking for the join time of a particular admin. Everything
-you need to do that was already discussed, I'll leave it for
-you as an exercise. The query variant should look like:</p>
+<p>现在我们不再将<code>&amp;Empty {}</code>作为管理员值进行存储，而是存储加入时间，我们从<code>&amp;env.block.time</code>中读取。另外，请注意我从<code>env</code>块的名称中删除了下划线 - 它只是为了让Rust编译器知道该变量是有意未使用的，而不是某种bug。</p>
+<p>最后，请记得在整个项目中删除任何过时的<code>Empty</code>导入 - 编译器应该会帮助您找出未使用的导入项。</p>
+<h2 id="查询和测试"><a class="header" href="#查询和测试">查询和测试</a></h2>
+<p>关于加入时间，最后要添加的是新的查询，用于询问特定管理员的加入时间。您已经讨论过完成这个任务所需的一切内容，我将把它留给您作为练习。查询变体应该类似于：</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[returns(JoinTimeResp)]
 JoinTime { admin: String },
 <span class="boring">}</span></code></pre></pre>
-<p>And the example response type:</p>
+<p>并且示例响应类型：</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[cw_serde]
@@ -5107,24 +5064,9 @@ pub struct JoinTimeResp {
     pub joined: Timestamp,
 }
 <span class="boring">}</span></code></pre></pre>
-<p>You may question that in response type, I suggest always returning a <code>joined</code>
-value, but what to do when no such admin is added? Well, in such a case, I
-would rely on the fact that <code>load</code> function returns a descriptive error of
-missing value in storage - however, feel free to define your own error for such
-a case or even make the <code>joined</code> field optional, and be returned if requested
-admin exists.</p>
-<p>Finally, there would be a good idea to make a test for new functionality - call
-a new query right after instantiation to verify initial admins has proper join
-time (possibly by extending the existing instantiation test).</p>
-<p>One thing you might need help with in tests might be how to get the time of
-execution. Using any OS-time would be doomed to fail - instead, you can call
-the
-<a href="https://docs.rs/cw-multi-test/0.16.4/cw_multi_test/struct.App.html#method.block_infohttps://docs.rs/cw-multi-test/0.16.4/cw_multi_test/struct.App.html#method.block_info"><code>block_info</code></a>
-function to reach the
-<a href="https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.BlockInfo.html"><code>BlockInfo</code></a>
-structure containing the block state at a particular moment in the app - calling
-it just before instantiation would make you sure you are working with the same state
-which would be simulated on the call.</p>
+<p>您可能会质疑在响应类型中，我建议始终返回一个<code>joined</code>值，但是如果没有添加这样的管理员怎么办？嗯，在这种情况下，我会依赖于<code>load</code>函数返回的存储中缺少值的描述性错误 - 但是，您可以根据需要定义自己的错误类型，甚至可以使<code>joined</code>字段可选，并在请求的管理员存在时返回。</p>
+<p>最后，建议为新功能编写一个测试 - 在实例化后立即调用新的查询，以验证初始管理员具有正确的加入时间（可以通过扩展现有的实例化测试来实现）。</p>
+<p>在测试中您可能需要帮助的一件事是如何获取执行的时间。使用任何操作系统时间都注定会失败 - 相反，您可以调用<code>block_info</code>函数以获取在应用程序中特定时刻的块状态，该函数返回一个包含块状态的<a href="https://docs.rs/cosmwasm-std/latest/cosmwasm_std/struct.BlockInfo.html"><code>BlockInfo</code></a>结构。在实例化之前调用它可以确保您正在处理与调用时模拟的相同状态。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="法律信息"><a class="header" href="#法律信息">法律信息</a></h1>
 <p>根据《德国电子商务法》第5条</p>
 <h2 id="提供者"><a class="header" href="#提供者">提供者</a></h2>
