@@ -1,7 +1,6 @@
 # CosmWasm book 智能合约 - 简体中文｜[English](https://github.com/CosmWasm/book)
 
-[在线阅读]([https://thejoven.github.io/CosmWasm-book-cn/](https://thejoven.github.io/CosmWasm-book-cn/))
-
+[[在线阅读]](https://thejoven.github.io/CosmWasm-book-cn/)
 使用 Rust 编写 CosmWasm 智能合约
 
 ## 关于
